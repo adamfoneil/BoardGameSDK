@@ -29,7 +29,7 @@ public abstract class GameState<TPlayer, TPiece>(ILogger<GameState<TPlayer, TPie
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, (int x, int y) location);
 
-	protected abstract (string logTemplate, object?[] logParams, GameState<TPlayer, TPiece>) Execute(TPlayer player, TPiece piece, (int x, int y) location);
+	protected abstract (string logTemplate, object?[] logParams, GameState<TPlayer, TPiece>) PlayInner(TPlayer player, TPiece piece, (int x, int y) location);
 
 	public GameState<TPlayer, TPiece> Play(string playerName, TPiece piece, (int x, int y) location)
 	{
@@ -39,7 +39,7 @@ public abstract class GameState<TPlayer, TPiece>(ILogger<GameState<TPlayer, TPie
 
 		Logger.LogInformation("{Player} plays {Piece} at {Location}", playerName, piece, location);
 
-		var (template, logParams, result) = Execute(player, piece, location);
+		var (template, logParams, result) = PlayInner(player, piece, location);
 
 		Logger.LogInformation(template, logParams);
 
