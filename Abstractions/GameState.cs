@@ -19,7 +19,7 @@ public abstract class GameState<TPlayer, TPiece>(ILogger<GameState<TPlayer, TPie
 	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, (int x, int y) location)
 	{
 		if (player.Name != CurrentPlayer) return (false, "Not your turn");
-		if (location.x < 0 || location.x >= Width || location.y < 0 || location.y >= Height) return (false, "Out of bounds");		
+		if (location.x < 1 || location.x >= Width || location.y < 1 || location.y >= Height) return (false, "Out of bounds");		
 		return ValidateInner(player, piece, location);
 	}
 
