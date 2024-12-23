@@ -9,6 +9,8 @@ namespace Database;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {	
 	public DbSet<GameInstance> GameInstances { get; set; }
+	public DbSet<GameInstancePlayer> GameInstancePlayers { get; set; }
+	public DbSet<ReadyPlayer> ReadyPlayers { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
