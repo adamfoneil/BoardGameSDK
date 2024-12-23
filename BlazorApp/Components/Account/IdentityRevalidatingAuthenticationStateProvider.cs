@@ -1,4 +1,3 @@
-using BlazorApp.Data;
 using Database;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;

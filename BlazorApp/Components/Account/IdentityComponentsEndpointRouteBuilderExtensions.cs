@@ -1,6 +1,6 @@
 using BlazorApp.Components.Account.Pages;
 using BlazorApp.Components.Account.Pages.Manage;
-using BlazorApp.Data;
+using Database;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
