@@ -1,0 +1,33 @@
+﻿<style>
+	.game-grid {
+		display: grid;
+		grid-template-columns: repeat(@Width, 1fr);
+		grid-template-rows: repeat(@Height, 1fr);
+	}
+
+	.game-grid > div {
+		border: 1px solid lightgray;
+		box-sizing: border-box;
+	}
+</style>
+
+<div class="game-grid" style="height:100%">
+	@for (int y = 1; y <= Height; y++)
+	{
+		for (int x = 1; x <= Width; x++)
+		{
+			<div>
+			@ChildContent(new Location(x, y))
+			</div>
+		}
+	}
+</div>
+
+@code {
+	[Parameter] public int Width { get; set; }
+	[Parameter] public int Height { get; set; }	
+	[Parameter]
+	public RenderFragment<Location> ChildContent { get; set; } = (Location location) => @<span>@location.X, @location.Y</span>;
+
+	public record Location(int X, int Y);
+}
