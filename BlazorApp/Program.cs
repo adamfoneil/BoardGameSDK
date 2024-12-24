@@ -6,8 +6,16 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSerilog();
+
+Log.Logger = new LoggerConfiguration()
+	.Enrich.WithProperty("Application", "BoardGameSDK")
+	.ReadFrom.Configuration(builder.Configuration)
+	.WriteTo.Console()
+	.CreateLogger();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
