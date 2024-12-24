@@ -1,4 +1,5 @@
 ﻿using Abstractions;
+using static BlazorApp.Components.GameGrid;
 
 namespace BlazorApp.Components.Games.MiniGame;
 
@@ -24,6 +25,12 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 
 	public override uint Width { get; } = DefinedWidth;
 	public override uint Height { get; } = DefinedHeight;
+
+	public bool TryGetPiece(Location location, out MiniGamePiece? piece)
+	{
+		piece = Pieces.FirstOrDefault(p => p.Location == location);
+		return piece != null;
+	}
 
 	protected override (string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, (int x, int y) location)
 	{

@@ -1,12 +1,11 @@
 using AuthExtensions;
 using BlazorApp.Components;
 using BlazorApp.Components.Account;
-using BlazorApp.Components.Games.MiniGame;
 using Database;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Fast.Components.FluentUI;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<CurrentUserAccessor<ApplicationDbContext, ApplicationUser>>();
 builder.Services.AddSingleton(sp => new HashidsNet.Hashids(builder.Configuration["HashIds:Salt"], int.Parse(builder.Configuration["HashIds:MinLength"] ?? "6")));
-builder.Services.AddScoped<StateManager>();
+builder.Services.AddScoped<BlazorApp.Components.Games.MiniGame.StateManager>();
 
 builder.Services.AddAuthentication(options =>
 	{

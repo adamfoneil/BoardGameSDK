@@ -1,23 +1,40 @@
-﻿@page "/Mini/{InstanceKey}"
-@inject StateManager MiniGameFactory
+﻿@page "/Mini1P/{InstanceKey?}"
+@rendermode InteractiveServer
+@inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject NavigationManager Nav
 
-<h3>MiniGame</h3>
+<h3>Mini1P Game</h3>
+<p>user = @CurrentUser?.UserName</p>
+
+<AuthorizeView>
+	<Authorized>
+		<p>yes I'm logged in</p>
+	</Authorized>
+</AuthorizeView>
 
 @if (GameInstances.Any())
 {
 	<ul>
 		@foreach (var game in GameInstances)
 		{
-			<li><a href="game.Url">@game.Url</a></li>
+			<li><a href="game.Url">@game.Id - @game.Url</a></li>
 		}		
-	</ul>
-	return;
+	</ul>		
 }
 
+<FluentButton OnClick="NewGame" Disabled="CurrentUser is null">Start Game</FluentButton>
+
+<GameGrid Visible="StateManager.IsLoaded" Width="StateManager.State?.Width ?? 0" Height="StateManager.State?.Height ?? 0" PlayerName="CurrentUser?.UserName" @bind-CurrentTurn="StateManager.CurrentPlayer">
+	<ChildContent>		
+		@if (StateManager.State!.TryGetPiece(context, out var piece))
+		{
+			<span>hello</span>
+		}
+	</ChildContent>
+</GameGrid>
+
 @code {
-	MiniGameState State = new();
-	int GameInstanceId = 0;
 	GameInstance[] GameInstances = [];
 
 	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
@@ -33,6 +50,12 @@
 			return;
 		}
 
-		State = await MiniGameFactory.LoadAsync(InstanceKey);
+		await StateManager.LoadAsync(InstanceKey);
+	}
+
+	async Task NewGame(MouseEventArgs args)
+	{
+		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true)]);
+		Nav.NavigateTo(url, forceLoad: true);
 	}
 }

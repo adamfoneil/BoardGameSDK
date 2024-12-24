@@ -9,8 +9,8 @@ public abstract class GameState<TPlayer, TPiece>
 {
 	public abstract uint Width { get; }
 	public abstract uint Height { get; }
-	public string? CurrentPlayer { get; init; }
-	public bool IsActive { get; init; } = true;
+	public string? CurrentPlayer { get; set; }
+	public bool IsActive { get; set; } = true;
 	public HashSet<TPlayer> Players { get; init; } = [];
 	public HashSet<TPiece> Pieces { get; init; } = [];
 	[JsonIgnore]

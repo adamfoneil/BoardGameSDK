@@ -8,8 +8,11 @@ public abstract class GameStateManager<TGameState, TPlayer, TPiece>(ILogger<Game
 	where TPiece : Piece
 {
 	protected readonly ILogger<GameStateManager<TGameState, TPlayer, TPiece>> Logger = logger;
-	protected TGameState? State { get; private set; }
-	protected int InstanceId { get; private set; }
+	public TGameState? State { get; private set; }
+	public int InstanceId { get; private set; }
+
+	public bool IsLoaded => State is not null;
+	public string? CurrentPlayer  { get => State?.CurrentPlayer; set => State!.CurrentPlayer = value; }
 
 	public abstract uint MinPlayers { get; }
 	public abstract uint MaxPlayers { get; }

@@ -3,7 +3,6 @@ using Database;
 using Database.Entities;
 using HashidsNet;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Text.Json;
 
 namespace BlazorApp.Components.Games.MiniGame;
@@ -66,7 +65,7 @@ public class StateManager(
 
 		await db.SaveChangesAsync();
 
-		var url = $"/Mini/{_hashids.Encode(instance.Id)}";
+		var url = $"/Mini1P/{_hashids.Encode(instance.Id)}";
 		await db.GameInstances.Where(row => row.Id == instance.Id).ExecuteUpdateAsync(row => row.SetProperty(x => x.Url, url));
 		
 		return (url, instance.Id, state);

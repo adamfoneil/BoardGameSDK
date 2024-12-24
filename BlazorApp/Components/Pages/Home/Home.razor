@@ -6,11 +6,19 @@
 	<Authorized>
 		<p>hello, @CurrentUser?.UserId</p>
 		<MyGames />
+
+		<FluentCard>
+			<h2>Hello World!</h2>
+			<FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
+		</FluentCard>
 	</Authorized>
 	<NotAuthorized>
 		<p>hello, stranger</p>
 	</NotAuthorized>
 </AuthorizeView>
+
+<p>in other news</p>
+<p>user = @CurrentUser?.UserName</p>
 
 @code {
 	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Reflection.Emit;
+using System.Text.Json.Serialization;
 
 namespace Abstractions;
 
@@ -8,5 +9,5 @@ public class Piece
 	public int X { get; set; }
 	public int Y { get; set; }
 	[JsonIgnore]
-	public (int X, int Y) Location => (X, Y);
+	public Location Location => new(X, Y);
 }
