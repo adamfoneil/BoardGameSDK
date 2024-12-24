@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Abstractions.csproj" />
+    <ProjectReference Include="..\AuthExtensions\AuthExtensions.csproj" />
     <ProjectReference Include="..\Database\Database.csproj" />
   </ItemGroup>
 
