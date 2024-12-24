@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@typeparam TDbContext where TDbContext : IdentityDbContext<TUser>
+@typeparam TUser where TUser : IdentityUser
+@inject CurrentUser<TDbContext, TUser> CurrentUser
+
+<CascadingValue Value="_currentUser">
+	@ChildContent
+</CascadingValue>
+
+@code {
+	private TUser? _currentUser;
+
+	[Parameter]
+	public RenderFragment? ChildContent { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		_currentUser = await CurrentUser.GetCurrentUserAsync();
+	}
+}
