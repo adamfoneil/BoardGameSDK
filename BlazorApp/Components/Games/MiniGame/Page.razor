@@ -3,6 +3,7 @@
 @inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Nav
+@inject ILogger<Page> Logger
 
 <h3>Mini1P Game</h3>
 <p>user = @CurrentUser?.UserName</p>
@@ -35,7 +36,7 @@
 </GameGrid>
 
 @code {
-	GameInstance[] GameInstances = [];
+	GameInstance[] GameInstances = [];	
 
 	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
 
@@ -43,6 +44,8 @@
 
 	protected override async Task OnParametersSetAsync()
 	{
+		Logger.LogDebug("Current user = {0}", CurrentUser?.UserName ?? "<unknown>");
+
 		if (InstanceKey is null)
 		{
 			using var db = DbFactory.CreateDbContext();

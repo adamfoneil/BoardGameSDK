@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject ILogger<Home> Logger
 
 <PageTitle>Home</PageTitle>
 
@@ -9,7 +10,7 @@
 
 		<FluentCard>
 			<h2>Hello World!</h2>
-			<FluentButton Appearance="@Appearance.Accent">Click Me</FluentButton>
+			<FluentButton Appearance="@Appearance.Accent" OnClick="ClickMe">Click Me</FluentButton>
 		</FluentCard>
 	</Authorized>
 	<NotAuthorized>
@@ -22,4 +23,10 @@
 
 @code {
 	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }
+
+	async Task ClickMe(MouseEventArgs args)
+	{
+		Logger.LogInformation("clicked");
+		await Task.CompletedTask;
+	}
 }
