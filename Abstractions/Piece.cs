@@ -2,7 +2,7 @@
 
 namespace Abstractions;
 
-public class PieceBase
+public class Piece
 {
 	public string PlayerName { get; init; } = default!;
 	public int X { get; set; }
