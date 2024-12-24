@@ -2,20 +2,20 @@
 @using Microsoft.AspNetCore.Identity.EntityFrameworkCore
 @typeparam TDbContext where TDbContext : IdentityDbContext<TUser>
 @typeparam TUser where TUser : IdentityUser
-@inject CurrentUserAccessor<TDbContext, TUser> CurrentUser
+@inject CurrentUserAccessor<TDbContext, TUser> CurrentUserAccessor
 
-<CascadingValue Value="_currentUser">
+<CascadingValue Value="CurrentUser">
 	@ChildContent
 </CascadingValue>
 
 @code {
-	private TUser? _currentUser;
+	private TUser? CurrentUser;
 
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		_currentUser = await CurrentUser.GetCurrentUserAsync();
+		CurrentUser = await CurrentUserAccessor.GetCurrentUserAsync();
 	}
 }
