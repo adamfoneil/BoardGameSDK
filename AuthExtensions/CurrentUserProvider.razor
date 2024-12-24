@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Identity.EntityFrameworkCore
 @typeparam TDbContext where TDbContext : IdentityDbContext<TUser>
 @typeparam TUser where TUser : IdentityUser
-@inject CurrentUser<TDbContext, TUser> CurrentUser
+@inject CurrentUserAccessor<TDbContext, TUser> CurrentUser
 
 <CascadingValue Value="_currentUser">
 	@ChildContent

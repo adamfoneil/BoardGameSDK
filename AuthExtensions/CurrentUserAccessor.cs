@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthExtensions;
 
-public class CurrentUser<TDbContext, TUser>(
+public class CurrentUserAccessor<TDbContext, TUser>(
 	AuthenticationStateProvider authStateProvider,
 	IDbContextFactory<TDbContext> dbFactory)
 	where TDbContext : IdentityDbContext<TUser>
