@@ -13,7 +13,7 @@ public class GameInstancePlayer : BaseTable
 	/// </summary>
 	public bool IsResigned { get; set; }
 
-	public GameInstance? Game { get; set; }
+	public GameInstance? GameInstance { get; set; }
 	public ApplicationUser? User { get; set; }
 }
 

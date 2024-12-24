@@ -1,0 +1,38 @@
+﻿@page "/Mini/{InstanceKey}"
+@inject StateManager MiniGameFactory
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+<h3>MiniGame</h3>
+
+@if (GameInstances.Any())
+{
+	<ul>
+		@foreach (var game in GameInstances)
+		{
+			<li><a href="game.Url">@game.Url</a></li>
+		}		
+	</ul>
+	return;
+}
+
+@code {
+	MiniGameState State = new();
+	int GameInstanceId = 0;
+	GameInstance[] GameInstances = [];
+
+	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
+
+	[Parameter] public string? InstanceKey { get; set; }
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (InstanceKey is null)
+		{
+			using var db = DbFactory.CreateDbContext();
+			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini1P).ToArrayAsync();
+			return;
+		}
+
+		State = await MiniGameFactory.LoadAsync(InstanceKey);
+	}
+}

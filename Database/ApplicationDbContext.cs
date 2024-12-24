@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Database;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {	
 	public DbSet<GameInstance> GameInstances { get; set; }
 	public DbSet<GameInstancePlayer> GameInstancePlayers { get; set; }

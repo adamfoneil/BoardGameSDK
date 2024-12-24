@@ -2,17 +2,15 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
 <AuthorizeView>
 	<Authorized>
 		<p>hello, @CurrentUser?.UserId</p>
+		<MyGames />
 	</Authorized>
+	<NotAuthorized>
+		<p>hello, stranger</p>
+	</NotAuthorized>
 </AuthorizeView>
-
-<GameGrid Width="20" Height="15" />
 
 @code {
 	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }

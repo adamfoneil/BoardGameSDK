@@ -16,18 +16,26 @@
 	{
 		for (int x = 1; x <= Width; x++)
 		{
-			<div>
+			<div style="@Style">
 			@ChildContent(new Location(x, y))
 			</div>
 		}
 	}
 </div>
+<p>player name = @PlayerName, current turn = @CurrentTurn</p>
 
 @code {
 	[Parameter] public int Width { get; set; }
 	[Parameter] public int Height { get; set; }	
-	[Parameter]
-	public RenderFragment<Location> ChildContent { get; set; } = (Location location) => @<span>@location.X, @location.Y</span>;
+	[Parameter] public RenderFragment<Location> ChildContent { get; set; } = (Location location) => @<span>@location.X, @location.Y</span>;
+
+	[Parameter] public string? PlayerName { get; set; }
+	[Parameter] public EventCallback<string?> PlayerNameChanged { get; set; }
+
+	[Parameter] public string? CurrentTurn { get; set; }
+	[Parameter] public EventCallback<string?> CurrentTurnChanged { get; set; }
+
+	private string Style => $"cursor:{(PlayerName == CurrentTurn ? "pointer" : "not-allowed")}";
 
 	public record Location(int X, int Y);
 }

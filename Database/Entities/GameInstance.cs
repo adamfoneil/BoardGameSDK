@@ -6,7 +6,8 @@ namespace Database.Entities;
 
 public enum GameType
 {
-	Demo,
+	Mini1P,
+	Mini2P,	
 	Scom
 }
 
@@ -27,7 +28,10 @@ public class GameInstance : BaseTable
 	public bool IsTestMode { get; set; }
 	public string Url { get; set; } = default!;
 
-	public ICollection<GameInstancePlayer> Players { get; set; } = [];
+	/// <summary>
+	/// human players only
+	/// </summary>
+	public ICollection<GameInstancePlayer> PlayerAccounts { get; set; } = [];
 }
 
 public class GameInstanceConfiguration : IEntityTypeConfiguration<GameInstance>

@@ -1,0 +1,29 @@
+﻿@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
+@foreach (var gameGrp in GameInstances.GroupBy(g => g.Type))
+{
+	<h4>@gameGrp.Key</h4>
+	<ul>
+		@foreach (var game in gameGrp)
+		{
+			<li><a href="game.Url">@game.Url</a></li>
+		}
+	</ul>
+}
+
+@code {
+	GameInstance[] GameInstances = [];
+
+	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (CurrentUser is null) return;
+
+		using var db = DbFactory.CreateDbContext();
+
+		var userId = CurrentUser?.UserId ?? 0;
+
+		GameInstances = await db.MyGames(userId).ToArrayAsync();
+	}
+}
