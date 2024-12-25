@@ -20,18 +20,21 @@ public abstract class GameState<TPlayer, TPiece>
 	[JsonIgnore]
 	public Dictionary<string, TPlayer> PlayersByName => Players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);	
 
-	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, (int x, int y) location)
+	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, Location location)
 	{
 		if (player.Name != CurrentPlayer) return (false, "Not your turn");
-		if (location.x >= Width || location.y >= Height) return (false, "Out of bounds");
+		if (location.X >= Width || location.Y >= Height) return (false, "Out of bounds");
+		if (!GetValidMoves(player, piece).Any(l => l == location)) return (false, "Invalid move");
 		return ValidateInner(player, piece, location);
 	}
 
-	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, (int x, int y) location);
+	public abstract Location[] GetValidMoves(TPlayer player, TPiece piece);
 
-	protected abstract (string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, (int x, int y) location);
+	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
-	public (string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, (int x, int y) location)
+	protected abstract (string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, Location location);
+
+	public (string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, Location location)
 	{
 		var player = PlayersByName[playerName];
 		var (valid, reason) = Validate(player, piece, location);
@@ -46,5 +49,5 @@ public abstract class GameState<TPlayer, TPiece>
 		player.IsActive = false;		
 	}
 
-	public TPiece[] GetPieces(Location location) => Pieces.Where(p => p.Location == location).ToArray();
+	public TPiece[] GetPieces(Location location) => Pieces.Where(p => p.Location == location).ToArray() ?? [];
 }

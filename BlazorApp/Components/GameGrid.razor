@@ -25,8 +25,9 @@
 		for (int x = 1; x <= State.Width; x++)
 		{
 			var pieces = State.GetPieces(new(x, y));
-			<div style="@Style">
-				@ChildContent(new() { Location = new(x, y), Pieces = pieces })
+			Location location = new(x, y);
+			<div style="@Style" @onclick="(args) => CellClick(location, pieces)">
+				@ChildContent(new() { Location = location, Pieces = pieces })
 			</div>
 		}
 	}
@@ -34,18 +35,48 @@
 <p>player name = @PlayerName, current turn = @State?.CurrentPlayer</p>
 
 @code {
+	private PlayActions Action = PlayActions.Select;
+
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
 	[Parameter] public RenderFragment<GameCell> ChildContent { get; set; } = (cell) => @<span>@cell.Location.X, @cell.Location.Y</span>;
+	/// <summary>
+	/// if there are multiple pieces in a cell, this function selects which one the player acts on
+	/// </summary>
+	[Parameter] public Func<TPiece[], TPiece?> PieceSelector { get; set; } = (pieces) => pieces.FirstOrDefault();
 
-	[Parameter] public string? PlayerName { get; set; }
-	[Parameter] public EventCallback<string?> PlayerNameChanged { get; set; }
+	[Parameter] public string? PlayerName { get; set; }	
 
-	private string Style => $"cursor:{(PlayerName == State?.CurrentPlayer ? "pointer" : "not-allowed")}";	
+	private string Style => $"cursor:{(IsMyTurn ? "pointer" : "not-allowed")}";	
 
 	public class GameCell
 	{
 		public required Location Location { get; init; }
 		public required TPiece[] Pieces { get; init; } = [];
+	}
+
+	private bool IsMyTurn => PlayerName == State?.CurrentPlayer;
+
+	private enum PlayActions
+	{
+		Select,
+		Execute
+	}
+
+	private void CellClick(Location location, TPiece[] pieces)
+	{
+		if (!IsMyTurn) return;
+
+		var piece = PieceSelector(pieces);
+		if (piece is null) return;
+
+		if (Action == PlayActions.Select)
+		{
+			Action = PlayActions.Execute;			
+		}
+		else if (Action == PlayActions.Execute)
+		{
+			Action = PlayActions.Select;
+		}
 	}
 }

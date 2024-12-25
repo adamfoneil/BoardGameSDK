@@ -25,12 +25,17 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 	public override uint Width { get; } = DefinedWidth;
 	public override uint Height { get; } = DefinedHeight;
 
-	protected override (string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, (int x, int y) location)
+	public override Location[] GetValidMoves(MiniGamePlayer player, MiniGamePiece piece)
 	{
 		throw new NotImplementedException();
 	}
 
-	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, (int x, int y) location)
+	protected override (string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
+	{
+		throw new NotImplementedException();
+	}
+
+	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
 	{
 		throw new NotImplementedException();
 	}
