@@ -11,25 +11,21 @@
 <h3>Mini1P Game</h3>
 <p>user = @CurrentUser?.UserName</p>
 
-<AuthorizeView>
-	<Authorized>
-		<p>yes I'm logged in</p>
-	</Authorized>
-</AuthorizeView>
-
 @if (GameInstances.Any())
 {
 	<ul>
 		@foreach (var game in GameInstances)
 		{
-			<li><a href="game.Url">@game.Id - @game.Url</a></li>
+			<li><a href="@game.Url">@game.Id - @game.Url</a></li>
 		}		
 	</ul>		
 }
 
 <FluentButton OnClick="NewGame" Disabled="CurrentUser is null">Start Game</FluentButton>
 
-<GameGrid Visible="StateManager.IsLoaded" Width="StateManager.State?.Width ?? 0" Height="StateManager.State?.Height ?? 0" PlayerName="CurrentUser?.UserName" @bind-CurrentTurn="StateManager.CurrentPlayer">
+<GameGrid 
+	TPlayer="MiniGamePlayer" TPiece="MiniGamePiece" TGameState="MiniGameState" 
+	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName">
 	<ChildContent>		
 		@if (StateManager.State!.TryGetPiece(context, out var piece))
 		{
@@ -70,12 +66,12 @@
 		Nav.NavigateTo(url, forceLoad: true);
 	}
 
-	private void OnGameStateChanged(object? sender, StateChangeEventArgs e)
+	private async void OnGameStateChanged(object? sender, StateChangeEventArgs e)
 	{
 		if (e.InstanceId != StateManager.InstanceId) return;
 		if (e.ToPlayer != CurrentUser?.UserName) return;
 		StateManager.Update(e.Json);
-		StateHasChanged();
+		await InvokeAsync(StateHasChanged);
 	}
 
 	public void Dispose()

@@ -1,5 +1,4 @@
 ﻿using Abstractions;
-using static BlazorApp.Components.GameGrid;
 
 namespace BlazorApp.Components.Games.MiniGame;
 

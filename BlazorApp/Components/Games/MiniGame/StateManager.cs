@@ -72,10 +72,12 @@ public class StateManager(
 
 		using var db = _dbFactory.CreateDbContext();
 
-		var playerAccounts = await db.Users.Join(
-			players.Where(p => p.IsHuman),
-			account => account.UserName, p => p.Name, (account, p) => new GameInstancePlayer() { UserId = account.UserId }, StringComparer.OrdinalIgnoreCase)
-			.ToArrayAsync();
+		var humanPlayers = players.Where(p => p.IsHuman).Select(p => p.Name).ToHashSet();
+
+		var playerAccounts = (await db.Users.ToArrayAsync())
+			.Where(acct => humanPlayers.Contains(acct.UserName, StringComparer.OrdinalIgnoreCase))
+			.Select(acct => new GameInstancePlayer() { UserId = acct.UserId })
+			.ToArray();
 
 		var instance = new GameInstance()
 		{
