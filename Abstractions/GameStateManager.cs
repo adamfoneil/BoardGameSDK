@@ -53,7 +53,7 @@ public abstract class GameStateManager<TGameState, TPlayer, TPiece>(
 
 	protected abstract Task<TGameState> LoadInstanceInnerAsync(int instanceId);
 
-	public async Task PlayAsync(string playerName, TPiece piece, (int x, int y) location)
+	public async Task PlayAsync(string playerName, TPiece piece, Location location)
 	{
 		if (State is null) throw new InvalidOperationException("Game not started.");
 		if (!State.IsActive) throw new InvalidOperationException("Game is not active.");

@@ -31,7 +31,7 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<CurrentUserAccessor<ApplicationDbContext, ApplicationUser>>();
 builder.Services.AddSingleton(sp => new HashidsNet.Hashids(builder.Configuration["HashIds:Salt"], int.Parse(builder.Configuration["HashIds:MinLength"] ?? "6")));
 builder.Services.AddSingleton<ApplicationEventRelay>();
-builder.Services.AddScoped<BlazorApp.Components.Games.MiniGame.StateManager>();
+builder.Services.AddScoped<BlazorApp.Components.Games.Mini1PGame.StateManager>();
 
 builder.Services.AddAuthentication(options =>
 	{
