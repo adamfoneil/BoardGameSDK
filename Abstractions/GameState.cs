@@ -45,4 +45,6 @@ public abstract class GameState<TPlayer, TPiece>
 		var player = PlayersByName[playerName];	
 		player.IsActive = false;		
 	}
+
+	public TPiece[] GetPieces(Location location) => Pieces.Where(p => p.Location == location).ToArray();
 }

@@ -8,14 +8,14 @@
 
 <style>
 	.game-grid {
-		display: grid;
-		grid-template-columns: repeat(@State.Width, 1fr);
-		grid-template-rows: repeat(@State.Height, 1fr);
+	display: grid;
+	grid-template-columns: repeat(@State.Width, 1fr);
+	grid-template-rows: repeat(@State.Height, 1fr);
 	}
 
 	.game-grid > div {
-		border: 1px solid lightgray;
-		box-sizing: border-box;
+	border: 1px solid lightgray;
+	box-sizing: border-box;
 	}
 </style>
 
@@ -24,8 +24,9 @@
 	{
 		for (int x = 1; x <= State.Width; x++)
 		{
+			var pieces = State.GetPieces(new(x, y));
 			<div style="@Style">
-				@ChildContent(new Location(x, y))
+				@ChildContent(new() { Location = new(x, y), Pieces = pieces })
 			</div>
 		}
 	}
@@ -35,10 +36,16 @@
 @code {
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
-	[Parameter] public RenderFragment<Location> ChildContent { get; set; } = (Location location) => @<span>@location.X, @location.Y</span>;
+	[Parameter] public RenderFragment<GameCell> ChildContent { get; set; } = (cell) => @<span>@cell.Location.X, @cell.Location.Y</span>;
 
 	[Parameter] public string? PlayerName { get; set; }
 	[Parameter] public EventCallback<string?> PlayerNameChanged { get; set; }
 
 	private string Style => $"cursor:{(PlayerName == State?.CurrentPlayer ? "pointer" : "not-allowed")}";	
+
+	public class GameCell
+	{
+		public required Location Location { get; init; }
+		public required TPiece[] Pieces { get; init; } = [];
+	}
 }

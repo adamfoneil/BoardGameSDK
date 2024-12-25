@@ -21,13 +21,13 @@
 	</ul>		
 }
 
-<FluentButton OnClick="NewGame" Disabled="CurrentUser is null">Start Game</FluentButton>
+<FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
 
 <GameGrid 
 	TPlayer="MiniGamePlayer" TPiece="MiniGamePiece" TGameState="MiniGameState" 
 	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName">
 	<ChildContent>		
-		@if (StateManager.State!.TryGetPiece(context, out var piece))
+		@if (context.Pieces.Any())
 		{
 			<span>hello</span>
 		}

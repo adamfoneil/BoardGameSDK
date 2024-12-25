@@ -5,7 +5,7 @@ using HashidsNet;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-namespace BlazorApp.Components.Games.MiniGame;
+namespace BlazorApp.Components.Games.Mini1PGame;
 
 public class StateManager(
 	ILogger<StateManager> logger,
@@ -57,6 +57,7 @@ public class StateManager(
 	{
 		var state = new MiniGameState()
 		{
+			CurrentPlayer = players.First().Name,
 			Players = players.Select(p => new MiniGamePlayer()
 			{
 				Name = p.Name,
