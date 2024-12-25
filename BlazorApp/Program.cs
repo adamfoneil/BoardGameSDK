@@ -1,4 +1,5 @@
 using AuthExtensions;
+using BlazorApp;
 using BlazorApp.Components;
 using BlazorApp.Components.Account;
 using Database;
@@ -29,6 +30,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<CurrentUserAccessor<ApplicationDbContext, ApplicationUser>>();
 builder.Services.AddSingleton(sp => new HashidsNet.Hashids(builder.Configuration["HashIds:Salt"], int.Parse(builder.Configuration["HashIds:MinLength"] ?? "6")));
+builder.Services.AddSingleton<ApplicationEventRelay>();
 builder.Services.AddScoped<BlazorApp.Components.Games.MiniGame.StateManager>();
 
 builder.Services.AddAuthentication(options =>
@@ -39,8 +41,7 @@ builder.Services.AddAuthentication(options =>
 	.AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-	options.UseSqlServer(connectionString));
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

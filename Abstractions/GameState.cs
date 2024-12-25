@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Abstractions;
 
+/// <summary>
+/// the structure and rules of a game
+/// </summary>
 public abstract class GameState<TPlayer, TPiece>
 	where TPlayer : Player
 	where TPiece : Piece
@@ -29,13 +31,13 @@ public abstract class GameState<TPlayer, TPiece>
 
 	protected abstract (string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, (int x, int y) location);
 
-	public void Play(string playerName, TPiece piece, (int x, int y) location)
+	public (string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, (int x, int y) location)
 	{
 		var player = PlayersByName[playerName];
 		var (valid, reason) = Validate(player, piece, location);
 		if (!valid) throw new Exception("Invalid move: " + reason);				
 
-		var (logTemplate, logParams) = PlayInner(player, piece, location);		
+		return PlayInner(player, piece, location);		
 	}
 
 	public void Resign(string playerName)

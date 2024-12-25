@@ -19,13 +19,38 @@ public class StateManager(
 
 	public override uint MaxPlayers => 1;
 
-	protected override async Task<(int InstanceId, MiniGameState State)> LoadInnerAsync(string key)
+	public async Task LoadAsync(string key)
 	{
 		var instanceId = _hashids.DecodeSingle(key);
+		await LoadInstanceAsync(instanceId);
+	}
+
+	protected override async Task<MiniGameState> LoadInstanceInnerAsync(int instanceId)
+	{		
 		using var db = _dbFactory.CreateDbContext();
 		var instance = await db.GameInstances.SingleOrDefaultAsync(row => row.Id == instanceId) ?? throw new Exception("Game instance not found.");
 		var state = JsonSerializer.Deserialize<MiniGameState>(instance.State) ?? throw new Exception("Could not deserialize game state.");
-		return (instance.Id, state);
+		return state;
+	}
+
+	protected override async Task SaveGameStateAsync()
+	{		
+		var json = JsonSerializer.Serialize(State);
+
+		using var db = _dbFactory.CreateDbContext();
+
+		var count = await db.GameInstances
+			.Where(row => row.Id == InstanceId)
+			.ExecuteUpdateAsync(row => row
+				.SetProperty(x => x.State, json)
+				.SetProperty(x => x.ModifiedAt, DateTime.UtcNow)
+				.SetProperty(x => x.ModifiedBy, nameof(StateManager)));
+
+		if (count != 1)
+		{
+			Logger.LogError("Game instance {id} not updated. Expected 1 row updated, got {count}", InstanceId, count);
+			throw new Exception($"Game instance {InstanceId} not updated. Expected 1 row updated, got {count}");
+		}
 	}
 
 	protected override async Task<(string Url, int InstanceId, MiniGameState State)> StartInnerAsync(bool testMode, (string Name, bool IsHuman)[] players)

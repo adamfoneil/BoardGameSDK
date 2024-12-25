@@ -1,9 +1,12 @@
 ﻿@page "/Mini1P/{InstanceKey?}"
+@using Abstractions
 @rendermode InteractiveServer
 @inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Nav
 @inject ILogger<Page> Logger
+@inject ApplicationEventRelay Relay
+@implements IDisposable
 
 <h3>Mini1P Game</h3>
 <p>user = @CurrentUser?.UserName</p>
@@ -42,6 +45,11 @@
 
 	[Parameter] public string? InstanceKey { get; set; }
 
+	protected override void OnInitialized()
+	{
+		Relay.StateChanged += OnGameStateChanged;
+	}
+
 	protected override async Task OnParametersSetAsync()
 	{
 		Logger.LogDebug("Current user = {0}", CurrentUser?.UserName ?? "<unknown>");
@@ -60,5 +68,18 @@
 	{
 		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true)]);
 		Nav.NavigateTo(url, forceLoad: true);
+	}
+
+	private void OnGameStateChanged(object? sender, StateChangeEventArgs e)
+	{
+		if (e.InstanceId != StateManager.InstanceId) return;
+		if (e.ToPlayer != CurrentUser?.UserName) return;
+		StateManager.Update(e.Json);
+		StateHasChanged();
+	}
+
+	public void Dispose()
+	{
+		Relay.StateChanged -= OnGameStateChanged;
 	}
 }
