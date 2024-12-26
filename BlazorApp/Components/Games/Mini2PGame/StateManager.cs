@@ -25,6 +25,12 @@ public class StateManager(
 
 	public int MovesRemaining => SpacesPerTurn - _spacesMoved;
 
+	public async Task LoadAsync(string key)
+	{
+		var instanceId = _hashids.DecodeSingle(key);
+		await LoadInstanceAsync(instanceId);
+	}
+
 	protected override async Task<State> LoadInstanceInnerAsync(int instanceId)
 	{
 		using var db = _dbFactory.CreateDbContext();

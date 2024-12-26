@@ -1,4 +1,4 @@
-﻿@page "/Mini1P/{InstanceKey?}"
+﻿@page "/Mini2P/{InstanceKey?}"
 @inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Nav
@@ -6,8 +6,8 @@
 @inject ApplicationEventRelay Relay
 @implements IDisposable
 
-<h3>Mini1P Game</h3>
-<p>user = @CurrentUser?.UserName</p>
+<h3>Mini2P Game</h3>
+<p>user = @CurrentUser?.UserName, current player = @StateManager.State?.CurrentPlayer</p>
 
 @if (GameInstances.Any())
 {
@@ -40,13 +40,27 @@
 
 	async Task NewGame(MouseEventArgs args)
 	{
-		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true)]);
+		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true), ("player2", true)]);
 		Nav.NavigateTo(url, forceLoad: true);
 	}
 
 	protected override void OnInitialized()
 	{
 		Relay.StateChanged += OnGameStateChanged;
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		Logger.LogDebug("Current user = {0}", CurrentUser?.UserName ?? "<unknown>");
+
+		if (InstanceKey is null)
+		{
+			using var db = DbFactory.CreateDbContext();
+			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini1P).ToArrayAsync();
+			return;
+		}
+
+		await StateManager.LoadAsync(InstanceKey);
 	}
 
 	private async void OnGameStateChanged(object? sender, StateChangeEventArgs e)

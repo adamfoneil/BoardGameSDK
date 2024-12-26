@@ -32,6 +32,7 @@ builder.Services.AddScoped<CurrentUserAccessor<ApplicationDbContext, Application
 builder.Services.AddSingleton(sp => new HashidsNet.Hashids(builder.Configuration["HashIds:Salt"], int.Parse(builder.Configuration["HashIds:MinLength"] ?? "6")));
 builder.Services.AddSingleton<ApplicationEventRelay>();
 builder.Services.AddScoped<BlazorApp.Components.Games.Mini1PGame.StateManager>();
+builder.Services.AddScoped<BlazorApp.Components.Games.Mini2PGame.StateManager>();
 
 builder.Services.AddAuthentication(options =>
 	{
