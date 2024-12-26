@@ -7,3 +7,6 @@ This is sort of a companion/iteration of [CardGameSDK](https://github.com/adamfo
 An actual "game" is [Mini1PGame](https://github.com/adamfoneil/BoardGameSDK/tree/master/BlazorApp/Components/Games/Mini1PGame) but all it does now is allow simple movement of pieces around a board:
 - [MiniGameState](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini1PGame/MiniGameState.cs) has the rules
 - [StateManager](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini1PGame/StateManager.cs) implements game creation and persistence
+
+The core Blazor components:
+- [GameGrid](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/GameGrid.razor) displays the game and handles click events
