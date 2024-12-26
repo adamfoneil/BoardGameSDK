@@ -1,7 +1,10 @@
 ﻿using Abstractions;
+using BlazorApp.Components.Games.Mini1PGame;
 using Database;
+using Database.Entities;
 using HashidsNet;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace BlazorApp.Components.Games.Mini2PGame;
 
@@ -28,13 +31,52 @@ public class StateManager(
 		return await db.GetGameStateAsync<State>(instanceId);
 	}
 
-	protected override Task SaveInnerAsync()
+	protected override async Task SaveInnerAsync()
 	{
-		throw new NotImplementedException();
+		using var db = _dbFactory.CreateDbContext();
+		await db.SaveStateAsync(InstanceId, State);
 	}
 
-	protected override Task<(string Url, int InstanceId, State State)> StartInnerAsync(bool testMode, (string Name, bool IsHuman)[] players)
+	protected override async Task<(string Url, int InstanceId, State State)> StartInnerAsync(bool testMode, (string Name, bool IsHuman)[] players)
 	{
-		throw new NotImplementedException();
+		var state = new State()
+		{
+			CurrentPlayer = players.First().Name,
+			Players = players.Select(p => new Player()
+			{
+				Name = p.Name,
+				IsHuman = p.IsHuman
+			}).ToHashSet(),
+			Pieces =
+			[
+				new Piece() { X = 1, Y = 19, Name = "A", PlayerName = players.First().Name },
+				new Piece() { X = 1, Y = 20, Name = "B", PlayerName = players.First().Name },
+				new Piece() { X = 2, Y = 20, Name = "C", PlayerName = players.First().Name },
+				new Piece() { X = 19, Y = 1, Name = "A", PlayerName = players.Last().Name },
+				new Piece() { X = 20, Y = 1, Name = "B", PlayerName = players.Last().Name },
+				new Piece() { X = 20, Y = 2, Name = "C", PlayerName = players.Last().Name }
+			]
+		};
+
+		using var db = _dbFactory.CreateDbContext();
+		var playerAccounts = await db.BuildPlayersAsync(players);
+
+		var instance = new GameInstance()
+		{
+			Type = GameType.Mini2P,
+			State = JsonSerializer.Serialize(state),
+			IsTestMode = testMode,
+			Url = "dummy",
+			PlayerAccounts = playerAccounts
+		};
+
+		db.GameInstances.Add(instance);
+
+		await db.SaveChangesAsync();
+
+		var url = $"/Mini2P/{_hashids.Encode(instance.Id)}";
+		await db.GameInstances.Where(row => row.Id == instance.Id).ExecuteUpdateAsync(row => row.SetProperty(x => x.Url, url));
+
+		return (url, instance.Id, state);
 	}
 }

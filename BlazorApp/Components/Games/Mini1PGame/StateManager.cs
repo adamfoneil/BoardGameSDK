@@ -57,12 +57,7 @@ public class StateManager(
 
 		using var db = _dbFactory.CreateDbContext();
 
-		var humanPlayers = players.Where(p => p.IsHuman).Select(p => p.Name).ToHashSet();
-
-		var playerAccounts = (await db.Users.ToArrayAsync())
-			.Where(acct => humanPlayers.Contains(acct.UserName, StringComparer.OrdinalIgnoreCase))
-			.Select(acct => new GameInstancePlayer() { UserId = acct.UserId })
-			.ToArray();
+		var playerAccounts = await db.BuildPlayersAsync(players);
 
 		var instance = new GameInstance()
 		{

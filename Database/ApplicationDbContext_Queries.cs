@@ -42,4 +42,14 @@ public partial class ApplicationDbContext
 			throw new Exception($"Game instance {instanceId} not updated. Expected 1 row updated, got {count}");
 		}
 	}
+
+	public async Task<GameInstancePlayer[]> BuildPlayersAsync((string Name, bool IsHuman)[] players)
+	{
+		var humanPlayers = players.Where(p => p.IsHuman).Select(p => p.Name).ToHashSet();
+
+		return  (await Users.ToArrayAsync())
+			.Where(acct => humanPlayers.Contains(acct.UserName, StringComparer.OrdinalIgnoreCase))
+			.Select(acct => new GameInstancePlayer() { UserId = acct.UserId })
+			.ToArray();
+	}
 }
