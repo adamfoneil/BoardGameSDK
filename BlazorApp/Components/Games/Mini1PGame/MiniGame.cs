@@ -60,10 +60,12 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 	
 	protected override (string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
 	{
-		piece.X = location.X;
-		piece.Y = location.Y;
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
+
+		piece.X = location.X;
+		piece.Y = location.Y;
+				
 		return ("{player} moved {piece} {spaces} to {location}", [ player, piece, distance, location ]);
 	}
 
