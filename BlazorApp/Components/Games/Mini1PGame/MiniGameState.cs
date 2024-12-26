@@ -29,7 +29,9 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 
 		piece.X = location.X;
 		piece.Y = location.Y;
-				
+		
+		if (_spacesMoved ==  SpacesPerTurn) _spacesMoved = 0;
+
 		return (CurrentPlayer!, "{player} moved {piece} {spaces} spaces to {location}", [ player, piece, distance, location ]);
 	}
 

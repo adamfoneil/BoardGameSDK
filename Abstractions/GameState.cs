@@ -21,6 +21,8 @@ public abstract class GameState<TPlayer, TPiece>
 	public Dictionary<string, TPlayer> PlayersByName => Players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
 	[JsonIgnore]
 	public Dictionary<Location, TPiece> PiecesByLocation => Pieces.ToDictionary(p => p.Location);
+	[JsonIgnore]
+	public bool PlayerChanged { get; private set; }
 
 	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, Location location)
 	{
@@ -50,9 +52,12 @@ public abstract class GameState<TPlayer, TPiece>
 
 		var (currentPlayer, logTemplate, logParams) = PlayInner(player, piece, location);
 
+		PlayerChanged = false;
+
 		if (currentPlayer != CurrentPlayer)
 		{
 			CurrentPlayer = currentPlayer;
+			PlayerChanged = true;
 		}
 
 		return (currentPlayer, logTemplate, logParams);
