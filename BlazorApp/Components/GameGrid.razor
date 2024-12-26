@@ -17,6 +17,10 @@
 	border: 1px solid lightgray;
 	box-sizing: border-box;
 	}
+
+	.valid-move {
+	background-color: lightgreen;
+	}
 </style>
 
 <div class="game-grid" style="height:100%">
@@ -24,10 +28,10 @@
 	{
 		for (int x = 1; x <= State.Width; x++)
 		{
-			var pieces = State.GetPieces(new(x, y));
+			var piece = State.GetPiece(new(x, y));
 			Location location = new(x, y);
-			<div style="@Style" @onclick="(args) => CellClick(location, pieces)">
-				@ChildContent(new() { Location = location, Pieces = pieces })
+			<div style="@Style" @onclick="(args) => CellClick(location, piece)" class="@ClassName(x, y)">
+				@ChildContent(new() { Location = location, Piece = piece })
 			</div>
 		}
 	}
@@ -36,23 +40,24 @@
 
 @code {
 	private PlayActions Action = PlayActions.Select;
+	private TPiece? SelectedPiece;
+	private HashSet<Location> ValidMoves = [];
 
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
 	[Parameter] public RenderFragment<GameCell> ChildContent { get; set; } = (cell) => @<span>@cell.Location.X, @cell.Location.Y</span>;
-	/// <summary>
-	/// if there are multiple pieces in a cell, this function selects which one the player acts on
-	/// </summary>
-	[Parameter] public Func<TPiece[], TPiece?> PieceSelector { get; set; } = (pieces) => pieces.FirstOrDefault();
+	[Parameter] public EventCallback<PlayArgs> OnPlay { get; set; }
 
 	[Parameter] public string? PlayerName { get; set; }	
 
-	private string Style => $"cursor:{(IsMyTurn ? "pointer" : "not-allowed")}";	
+	private string Style => $"cursor:{(IsMyTurn ? "pointer" : "not-allowed")}";
+
+	private string ClassName(int x, int y) => $"{(ValidMoves.Contains(new(x, y)) ? "valid-move" : string.Empty)}";
 
 	public class GameCell
 	{
 		public required Location Location { get; init; }
-		public required TPiece[] Pieces { get; init; } = [];
+		public TPiece? Piece { get; init; }
 	}
 
 	private bool IsMyTurn => PlayerName == State?.CurrentPlayer;
@@ -63,20 +68,32 @@
 		Execute
 	}
 
-	private void CellClick(Location location, TPiece[] pieces)
-	{
+	private async Task CellClick(Location location, TPiece? piece)
+	{		
 		if (!IsMyTurn) return;
-
-		var piece = PieceSelector(pieces);
-		if (piece is null) return;
 
 		if (Action == PlayActions.Select)
 		{
+			if (piece is null) return;
+			SelectedPiece = piece;
+			ValidMoves = State!.GetValidMoves(State.CurrentPlayer!, piece);
 			Action = PlayActions.Execute;			
 		}
 		else if (Action == PlayActions.Execute)
 		{
+			var (msg, parameters) = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
+			await OnPlay.InvokeAsync(new PlayArgs { LogMessage = msg, LogParams = parameters });
 			Action = PlayActions.Select;
+			SelectedPiece = null;
+			ValidMoves.Clear();
 		}
+
+		StateHasChanged();
+	}
+
+	public class PlayArgs
+	{
+		public string? LogMessage { get; init; }
+		public object?[] LogParams { get; init; } = [];
 	}
 }

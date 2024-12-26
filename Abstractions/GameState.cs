@@ -18,17 +18,25 @@ public abstract class GameState<TPlayer, TPiece>
 	[JsonIgnore]
 	public ILookup<string, TPiece> PlayerPieces => Pieces.ToLookup(p => p.PlayerName, StringComparer.OrdinalIgnoreCase);
 	[JsonIgnore]
-	public Dictionary<string, TPlayer> PlayersByName => Players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);	
+	public Dictionary<string, TPlayer> PlayersByName => Players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
+	[JsonIgnore]
+	public Dictionary<Location, TPiece> PiecesByLocation => Pieces.ToDictionary(p => p.Location);
 
 	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, Location location)
 	{
 		if (player.Name != CurrentPlayer) return (false, "Not your turn");
 		if (location.X >= Width || location.Y >= Height) return (false, "Out of bounds");
-		if (!GetValidMoves(player, piece).Any(l => l == location)) return (false, "Invalid move");
+		if (!GetValidMovesInner(player, piece).Any(l => l == location)) return (false, "Invalid move");
 		return ValidateInner(player, piece, location);
 	}
 
-	public abstract Location[] GetValidMoves(TPlayer player, TPiece piece);
+	protected abstract Location[] GetValidMovesInner(TPlayer player, TPiece piece);
+
+	public HashSet<Location> GetValidMoves(string playerName, TPiece piece)
+	{
+		var player = PlayersByName[playerName];
+		return GetValidMovesInner(player, piece).Clip(Width, Height).ToHashSet();
+	}
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
@@ -49,5 +57,5 @@ public abstract class GameState<TPlayer, TPiece>
 		player.IsActive = false;		
 	}
 
-	public TPiece[] GetPieces(Location location) => Pieces.Where(p => p.Location == location).ToArray() ?? [];
+	public TPiece? GetPiece(Location location) => PiecesByLocation.TryGetValue(location, out var piece) ? piece : null;
 }

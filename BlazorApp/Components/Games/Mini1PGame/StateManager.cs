@@ -33,7 +33,7 @@ public class StateManager(
 		return state;
 	}
 
-	protected override async Task SaveGameStateAsync()
+	protected override async Task SaveInnerAsync()
 	{		
 		var json = JsonSerializer.Serialize(State);
 
@@ -65,9 +65,9 @@ public class StateManager(
 			}).ToHashSet(),
 			Pieces =
 			[
-				new MiniGamePiece() { X = 1, Y = 19 },
-				new MiniGamePiece() { X = 1, Y = 20 },
-				new MiniGamePiece() { X = 2, Y = 20 }
+				new MiniGamePiece() { X = 1, Y = 19, Name = "A" },
+				new MiniGamePiece() { X = 1, Y = 20, Name = "B" },
+				new MiniGamePiece() { X = 2, Y = 20, Name = "C" }
 			]
 		};
 

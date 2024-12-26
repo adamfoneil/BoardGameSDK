@@ -59,10 +59,16 @@ public abstract class GameStateManager<TGameState, TPlayer, TPiece>(
 		if (!State.IsActive) throw new InvalidOperationException("Game is not active.");
 		if (State.PlayersByName[playerName].IsActive == false) throw new InvalidOperationException("Player is not active.");
 		var (logTemplate, logParams) = State.Play(playerName, piece, location);
-		await SaveGameStateAsync();
+		await SaveInnerAsync();
 	}
 
-	protected abstract Task SaveGameStateAsync();
+	public async Task SaveAsync()
+	{
+		if (State is null) throw new InvalidOperationException("Game not started.");
+		await SaveInnerAsync();
+	}
+
+	protected abstract Task SaveInnerAsync();
 
 	public void Update(string json)
 	{

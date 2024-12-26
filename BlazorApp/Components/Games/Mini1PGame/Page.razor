@@ -1,5 +1,6 @@
 ﻿@page "/Mini1P/{InstanceKey?}"
 @using Abstractions
+@using static BlazorApp.Components.GameGrid<TPlayer, TPiece, TGameState>
 @rendermode InteractiveServer
 @inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
@@ -25,11 +26,11 @@
 
 <GameGrid 
 	TPlayer="MiniGamePlayer" TPiece="MiniGamePiece" TGameState="MiniGameState" 
-	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName">
+	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
 	<ChildContent>		
-		@if (context.Pieces.Any())
+		@if (context.Piece != null)
 		{
-			<span>hello</span>
+			<span>@context.Piece.Name</span>
 		}
 	</ChildContent>
 </GameGrid>
@@ -77,5 +78,10 @@
 	public void Dispose()
 	{
 		Relay.StateChanged -= OnGameStateChanged;
+	}
+
+	private async Task SaveState(PlayArgs args)
+	{
+		await StateManager.SaveAsync();
 	}
 }
