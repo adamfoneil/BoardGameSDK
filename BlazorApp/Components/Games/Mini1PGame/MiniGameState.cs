@@ -22,7 +22,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 	protected override Location[] GetValidMovesInner(MiniGamePlayer player, MiniGamePiece piece) =>
 		piece.Location.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved).ToArray();
 	
-	protected override (string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
+	protected override (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
@@ -30,7 +30,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 		piece.X = location.X;
 		piece.Y = location.Y;
 				
-		return ("{player} moved {piece} {spaces} spaces to {location}", [ player, piece, distance, location ]);
+		return (CurrentPlayer!, "{player} moved {piece} {spaces} spaces to {location}", [ player, piece, distance, location ]);
 	}
 
 	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, Location location)

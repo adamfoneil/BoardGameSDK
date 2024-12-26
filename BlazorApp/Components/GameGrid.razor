@@ -81,7 +81,7 @@
 		}
 		else if (Action == PlayActions.Execute)
 		{
-			var (msg, parameters) = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
+			var (currentPlayer, msg, parameters) = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
 			await OnPlay.InvokeAsync(new PlayArgs { LogMessage = msg, LogParams = parameters });
 			Action = PlayActions.Select;
 			SelectedPiece = null;
