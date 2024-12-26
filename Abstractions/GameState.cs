@@ -40,15 +40,22 @@ public abstract class GameState<TPlayer, TPiece>
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
-	protected abstract (string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, Location location);
+	protected abstract (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, Location location);
 
-	public (string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, Location location)
+	public (string currentPlayer, string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, Location location)
 	{
 		var player = PlayersByName[playerName];
 		var (valid, reason) = Validate(player, piece, location);
-		if (!valid) throw new Exception("Invalid move: " + reason);				
+		if (!valid) throw new Exception("Invalid move: " + reason);
 
-		return PlayInner(player, piece, location);		
+		var (currentPlayer, logTemplate, logParams) = PlayInner(player, piece, location);
+
+		if (currentPlayer != CurrentPlayer)
+		{
+			CurrentPlayer = currentPlayer;
+		}
+
+		return (currentPlayer, logTemplate, logParams);
 	}
 
 	public void Resign(string playerName)
