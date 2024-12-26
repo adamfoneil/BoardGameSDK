@@ -27,7 +27,7 @@ public abstract class GameState<TPlayer, TPiece>
 	public (bool result, string? reason) Validate(TPlayer player, TPiece piece, Location location)
 	{
 		if (player.Name != CurrentPlayer) return (false, "Not your turn");
-		if (location.X >= Width || location.Y >= Height) return (false, "Out of bounds");
+		if (location.X > Width || location.Y > Height) return (false, "Out of bounds");
 		if (!GetValidMovesInner(player, piece).Any(l => l == location)) return (false, "Invalid move");
 		return ValidateInner(player, piece, location);
 	}

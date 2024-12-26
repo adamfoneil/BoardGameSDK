@@ -65,9 +65,9 @@ public class StateManager(
 			}).ToHashSet(),
 			Pieces =
 			[
-				new MiniGamePiece() { X = 1, Y = 19, Name = "A" },
-				new MiniGamePiece() { X = 1, Y = 20, Name = "B" },
-				new MiniGamePiece() { X = 2, Y = 20, Name = "C" }
+				new MiniGamePiece() { X = 1, Y = 19, Name = "A", PlayerName = players.First().Name },
+				new MiniGamePiece() { X = 1, Y = 20, Name = "B", PlayerName = players.First().Name },
+				new MiniGamePiece() { X = 2, Y = 20, Name = "C", PlayerName = players.First().Name }
 			]
 		};
 

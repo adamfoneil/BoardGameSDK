@@ -30,7 +30,7 @@
 		{
 			var piece = State.GetPiece(new(x, y));
 			Location location = new(x, y);
-			<div style="@Style" @onclick="(args) => CellClick(location, piece)" class="@ClassName(x, y)">
+			<div style="@Style(x, y)" @onclick="(args) => CellClick(location, piece)" class="@ClassName(x, y)">
 				@ChildContent(new() { Location = location, Piece = piece })
 			</div>
 		}
@@ -50,7 +50,9 @@
 
 	[Parameter] public string? PlayerName { get; set; }	
 
-	private string Style => $"cursor:{(IsMyTurn ? "pointer" : "not-allowed")}";
+	private string Style(int x, int y) => $"cursor:{(IsMyTurn && (ValidMoves.Contains(new(x, y)) || IsOneOfMyPieces(x, y)) ? "pointer" : "not-allowed")}";
+
+	private bool IsOneOfMyPieces(int x, int y) => State!.PlayerPieces[State.CurrentPlayer!].Any(p => p.Location == new Location(x, y));
 
 	private string ClassName(int x, int y) => $"{(ValidMoves.Contains(new(x, y)) ? "valid-move" : string.Empty)}";
 
@@ -71,6 +73,7 @@
 	private async Task CellClick(Location location, TPiece? piece)
 	{		
 		if (!IsMyTurn) return;
+		if (Action == PlayActions.Execute && piece != null && !ValidMoves.Contains(piece.Location)) return;
 
 		if (Action == PlayActions.Select)
 		{
