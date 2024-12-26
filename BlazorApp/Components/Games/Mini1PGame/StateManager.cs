@@ -28,9 +28,7 @@ public class StateManager(
 	protected override async Task<MiniGameState> LoadInstanceInnerAsync(int instanceId)
 	{		
 		using var db = _dbFactory.CreateDbContext();
-		var instance = await db.GameInstances.SingleOrDefaultAsync(row => row.Id == instanceId) ?? throw new Exception("Game instance not found.");
-		var state = JsonSerializer.Deserialize<MiniGameState>(instance.State) ?? throw new Exception("Could not deserialize game state.");
-		return state;
+		return await db.GetGameStateAsync<MiniGameState>(instanceId);
 	}
 
 	protected override async Task SaveInnerAsync()
