@@ -24,6 +24,8 @@
 
 <FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
 
+<p>moves remaining: @StateManager.State?.MovesRemaining</p>
+
 <GameGrid 
 	TPlayer="MiniGamePlayer" TPiece="MiniGamePiece" TGameState="MiniGameState" 
 	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">

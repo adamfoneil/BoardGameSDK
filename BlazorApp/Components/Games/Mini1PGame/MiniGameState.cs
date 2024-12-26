@@ -19,6 +19,8 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 
 	private int _spacesMoved = 0;
 
+	public int MovesRemaining => SpacesPerTurn - _spacesMoved;
+
 	protected override Location[] GetValidMovesInner(MiniGamePlayer player, MiniGamePiece piece) =>
 		piece.Location
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
