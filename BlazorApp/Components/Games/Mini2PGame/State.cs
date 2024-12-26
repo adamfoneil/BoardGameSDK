@@ -31,7 +31,7 @@ public class State : GameState<Player, Piece>
 		if (_spacesMoved == SpacesPerTurn)
 		{
 			CurrentPlayerIndex++;
-			if (CurrentPlayerIndex > Players.Count) CurrentPlayerIndex = 0;
+			if (CurrentPlayerIndex >= Players.Count) CurrentPlayerIndex = 0;
 			_spacesMoved = 0;
 			currentPlayer = Players.ToArray()[CurrentPlayerIndex].Name;
 		}

@@ -1,4 +1,6 @@
-﻿namespace Abstractions;
+﻿using System.Text.Json;
+
+namespace Abstractions;
 
 public class StateChangeEventArgs(string toPlayer, int instanceId, string json) : EventArgs
 {
@@ -22,12 +24,16 @@ public abstract class EventRelay
 	/// <summary>
 	/// notify active players of a game (except the event initiator) that the state of a game instance has changed
 	/// </summary>
-	public async Task StateChangedAsync(string fromPlayer, int instanceId, string json)
+	public async Task StateChangedAsync<TGameState, TPlayer, TPiece>(string fromPlayer, GameStateManager<TGameState, TPlayer, TPiece> gameStateManager)
+		where TPlayer : Player
+		where TPiece : Piece
+		where TGameState : GameState<TPlayer, TPiece>
 	{
-		var players = await GetActivePlayersAsync(instanceId);
+		var players = await GetActivePlayersAsync(gameStateManager.InstanceId);
+		var json = JsonSerializer.Serialize(gameStateManager.State);
 		foreach (var player in players.Except([fromPlayer], StringComparer.OrdinalIgnoreCase))
 		{			
-			StateChanged?.Invoke(this, new(player, instanceId, json));			
+			StateChanged?.Invoke(this, new(player, gameStateManager.InstanceId, json));			
 		}
 	}
 

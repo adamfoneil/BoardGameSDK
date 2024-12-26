@@ -22,7 +22,7 @@
 <FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
 
 <GameGrid TPlayer="Player" TPiece="Piece" TGameState="State"
-		  Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
+Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
 	<ChildContent>
 		@if (context.Piece != null)
 		{
@@ -75,6 +75,7 @@
 	{
 		Logger.LogInformation(args.LogMessage, args.LogParams);
 		await StateManager.SaveAsync();
+		await Relay.StateChangedAsync(CurrentUser!.UserName!, StateManager);
 	}
 
 	public void Dispose()
