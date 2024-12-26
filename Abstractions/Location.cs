@@ -19,7 +19,7 @@ public record Location(int X, int Y);
 public static class LocationExtensions
 {
 	public static IEnumerable<Location> GetAdjacentLocations(this Location location, Directions directions, int count) =>
-		location.GetAdjacentLocations(directions, loc => loc.Distance(location) <= 5);
+		location.GetAdjacentLocations(directions, loc => loc.Distance(location) <= count);
 
 	public static IEnumerable<Location> GetAdjacentLocations(this Location location, Directions directions, Func<Location, bool> whileCondition)
 	{
