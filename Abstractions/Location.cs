@@ -18,48 +18,8 @@ public record Location(int X, int Y);
 
 public static class LocationExtensions
 {
-	public static IEnumerable<Location> GetAdjacentLocations(this Location location, Directions directions, int count)
-	{
-		if (directions.HasFlag(Directions.North))
-		{
-			yield return new(location.X, location.Y - count);
-		}
-
-		if (directions.HasFlag(Directions.South))
-		{
-			yield return new(location.X, location.Y + count);
-		}
-
-		if (directions.HasFlag(Directions.East))
-		{
-			yield return new(location.X + count, location.Y);
-		}
-
-		if (directions.HasFlag(Directions.West))
-		{
-			yield return new(location.X - count, location.Y);
-		}
-
-		if (directions.HasFlag(Directions.NorthEast))
-		{
-			yield return new(location.X + count, location.Y - count);
-		}
-
-		if (directions.HasFlag(Directions.NorthWest))
-		{
-			yield return new(location.X - count, location.Y - count);
-		}
-
-		if (directions.HasFlag(Directions.SouthEast))
-		{
-			yield return new(location.X + count, location.Y + count);
-		}
-
-		if (directions.HasFlag(Directions.SouthWest))
-		{
-			yield return new(location.X - count, location.Y + count);
-		}
-	}
+	public static IEnumerable<Location> GetAdjacentLocations(this Location location, Directions directions, int count) =>
+		location.GetAdjacentLocations(directions, loc => loc.Distance(location) <= 5);
 
 	public static IEnumerable<Location> GetAdjacentLocations(this Location location, Directions directions, Func<Location, bool> whileCondition)
 	{
@@ -109,7 +69,7 @@ public static class LocationExtensions
 			while (whileCondition(next))
 			{
 				yield return next;
-				next = new(next.X + 1, next.Y);
+				next = new(next.X + 1, next.Y - 1);
 			}
 		}
 

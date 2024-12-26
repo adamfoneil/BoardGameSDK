@@ -66,7 +66,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 		piece.X = location.X;
 		piece.Y = location.Y;
 				
-		return ("{player} moved {piece} {spaces} to {location}", [ player, piece, distance, location ]);
+		return ("{player} moved {piece} {spaces} spaces to {location}", [ player, piece, distance, location ]);
 	}
 
 	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
