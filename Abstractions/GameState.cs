@@ -12,6 +12,7 @@ public abstract class GameState<TPlayer, TPiece>
 	public abstract uint Width { get; }
 	public abstract uint Height { get; }
 	public string? CurrentPlayer { get; set; }
+	public int CurrentPlayerIndex { get; set; }
 	public bool IsActive { get; set; } = true;
 	public HashSet<TPlayer> Players { get; init; } = [];
 	public HashSet<TPiece> Pieces { get; init; } = [];

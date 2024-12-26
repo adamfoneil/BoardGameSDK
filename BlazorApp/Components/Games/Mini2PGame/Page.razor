@@ -6,13 +6,43 @@
 @inject ApplicationEventRelay Relay
 @implements IDisposable
 
+<h3>Mini1P Game</h3>
+<p>user = @CurrentUser?.UserName</p>
 
-<h3>Page</h3>
+@if (GameInstances.Any())
+{
+	<ul>
+		@foreach (var game in GameInstances)
+		{
+			<li><a href="@game.Url">@game.Id - @game.Url</a></li>
+		}
+	</ul>
+}
+
+<FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
+
+<GameGrid TPlayer="Player" TPiece="Piece" TGameState="State"
+		  Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
+	<ChildContent>
+		@if (context.Piece != null)
+		{
+			<span>@context.Piece.Name</span>
+		}
+	</ChildContent>
+</GameGrid>
 
 @code {
+	GameInstance[] GameInstances = [];
+
 	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
 
 	[Parameter] public string? InstanceKey { get; set; }
+
+	async Task NewGame(MouseEventArgs args)
+	{
+		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true)]);
+		Nav.NavigateTo(url, forceLoad: true);
+	}
 
 	protected override void OnInitialized()
 	{
@@ -25,6 +55,12 @@
 		if (e.ToPlayer != CurrentUser?.UserName) return;
 		StateManager.Update(e.Json);
 		await InvokeAsync(StateHasChanged);
+	}
+
+	private async Task SaveState(PlayArgs args)
+	{
+		Logger.LogInformation(args.LogMessage, args.LogParams);
+		await StateManager.SaveAsync();
 	}
 
 	public void Dispose()

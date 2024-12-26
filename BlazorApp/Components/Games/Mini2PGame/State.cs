@@ -26,13 +26,23 @@ public class State : GameState<Player, Piece>
 		piece.X = location.X;
 		piece.Y = location.Y;
 
-		if (_spacesMoved == SpacesPerTurn) _spacesMoved = 0;
+		string currentPlayer = CurrentPlayer!;
 
-		return (CurrentPlayer!, "{player} moved {piece} {spaces} spaces to {location}", [player, piece, distance, location]);
+		if (_spacesMoved == SpacesPerTurn)
+		{
+			CurrentPlayerIndex++;
+			if (CurrentPlayerIndex > Players.Count) CurrentPlayerIndex = 0;
+			_spacesMoved = 0;
+			currentPlayer = Players.ToArray()[CurrentPlayerIndex].Name;
+		}
+
+		return (currentPlayer, "{player} moved {piece} {spaces} spaces to {location}", [player, piece, distance, location]);
 	}
 
 	protected override (bool result, string? reason) ValidateInner(Player player, Piece piece, Location location)
 	{
-		throw new NotImplementedException();
+		// no capturing in this game, just movement
+		if (PiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
+		return (true, default);
 	}
 }
