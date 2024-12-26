@@ -1,12 +1,12 @@
 ﻿@page "/Mini1P/{InstanceKey?}"
 @using Abstractions
-@using static BlazorApp.Components.GameGrid<TPlayer, TPiece, TGameState>
 @rendermode InteractiveServer
 @inject StateManager StateManager
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Nav
 @inject ILogger<Page> Logger
 @inject ApplicationEventRelay Relay
+@inject ILogger<Page> Logger
 @implements IDisposable
 
 <h3>Mini1P Game</h3>
@@ -78,10 +78,11 @@
 	public void Dispose()
 	{
 		Relay.StateChanged -= OnGameStateChanged;
-	}
+	}	
 
 	private async Task SaveState(PlayArgs args)
 	{
+		Logger.LogInformation(args.LogMessage, args.LogParams);
 		await StateManager.SaveAsync();
 	}
 }
