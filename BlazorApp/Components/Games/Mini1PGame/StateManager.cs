@@ -33,22 +33,8 @@ public class StateManager(
 
 	protected override async Task SaveInnerAsync()
 	{		
-		var json = JsonSerializer.Serialize(State);
-
 		using var db = _dbFactory.CreateDbContext();
-
-		var count = await db.GameInstances
-			.Where(row => row.Id == InstanceId)
-			.ExecuteUpdateAsync(row => row
-				.SetProperty(x => x.State, json)
-				.SetProperty(x => x.ModifiedAt, DateTime.UtcNow)
-				.SetProperty(x => x.ModifiedBy, nameof(StateManager)));
-
-		if (count != 1)
-		{
-			Logger.LogError("Game instance {id} not updated. Expected 1 row updated, got {count}", InstanceId, count);
-			throw new Exception($"Game instance {InstanceId} not updated. Expected 1 row updated, got {count}");
-		}
+		await db.SaveStateAsync(InstanceId, State);
 	}
 
 	protected override async Task<(string Url, int InstanceId, MiniGameState State)> StartInnerAsync(bool testMode, (string Name, bool IsHuman)[] players)
