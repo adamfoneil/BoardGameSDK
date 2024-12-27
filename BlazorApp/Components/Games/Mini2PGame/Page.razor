@@ -21,8 +21,9 @@
 
 <FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
 
-<GameGrid TPlayer="Player" TPiece="Piece" TGameState="State"
-Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
+<GameGrid 
+	TPlayer="Player" TPiece="Piece" TGameState="State"
+	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
 	<ChildContent>
 		@if (context.Piece != null)
 		{
@@ -56,7 +57,7 @@ Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentU
 		if (InstanceKey is null)
 		{
 			using var db = DbFactory.CreateDbContext();
-			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini1P).ToArrayAsync();
+			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini2P).ToArrayAsync();
 			return;
 		}
 
