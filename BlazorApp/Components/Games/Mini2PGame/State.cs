@@ -6,7 +6,7 @@ public class State : GameState<Player, Piece>
 {
 	public override uint Width => 20;
 
-	public override uint Height => 30;
+	public override uint Height => 20;
 
 	public const int SpacesPerTurn = 5;
 
