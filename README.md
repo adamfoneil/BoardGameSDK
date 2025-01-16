@@ -10,5 +10,11 @@ An actual "game" is [Mini1PGame](https://github.com/adamfoneil/BoardGameSDK/tree
 - [StateManager](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini1PGame/StateManager.cs) implements game creation and persistence
 - The [Page](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini1PGame/Page.razor) displays the game, using the `GameGrid` component below
 
+Another "game" is [Mini2PGame](https://github.com/adamfoneil/BoardGameSDK/tree/master/BlazorApp/Components/Games/Mini2PGame). This is very similar to the 1P game, but here two players alternate moving 3 pieces 5 spaces per turn.
+
+![mini2pgame](https://github.com/user-attachments/assets/790f5309-02bf-403c-bb3c-a4c8a98bb344)
+
 The core Blazor components:
 - [GameGrid](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/GameGrid.razor) displays the game and handles click events
+
+
