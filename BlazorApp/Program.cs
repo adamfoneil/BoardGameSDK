@@ -6,7 +6,7 @@ using Database;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.FluentUI.AspNetCore.Components;
+using Radzen;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,12 +22,12 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
+builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddHttpClient();
-builder.Services.AddFluentUIComponents();
 builder.Services.AddSingleton(sp => new HashidsNet.Hashids(builder.Configuration["HashIds:Salt"], int.Parse(builder.Configuration["HashIds:MinLength"] ?? "6")));
 builder.Services.AddSingleton<ApplicationEventRelay>();
 builder.Services.AddScoped<BlazorApp.Components.Games.Mini1PGame.StateManager>();
