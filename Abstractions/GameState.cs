@@ -38,7 +38,7 @@ public abstract class GameState<TPlayer, TPiece>
 	public HashSet<Location> GetValidMoves(string playerName, TPiece piece)
 	{
 		var player = PlayersByName[playerName];
-		return GetValidMovesInner(player, piece).Clip(Width, Height).ToHashSet();
+		return [.. GetValidMovesInner(player, piece).Clip(Width, Height)];
 	}
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
