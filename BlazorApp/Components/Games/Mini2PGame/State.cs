@@ -2,6 +2,12 @@
 
 namespace BlazorApp.Components.Games.Mini2PGame;
 
+public enum Mode
+{
+	Moving,
+	Challenging
+}
+
 public class State : GameState<Player, Piece>
 {
 	public override uint Width => 20;
@@ -26,8 +32,12 @@ public class State : GameState<Player, Piece>
 		piece.Y = location.Y;
 
 		string currentPlayer = CurrentPlayer!;
-
-
+		
+		if (IsChallenging(player, piece, location, out var challenge))
+		{
+			// save to state, change game mode to Challenge
+			// todo: make it so the the piece location doesn't take effect until challenge is resolved
+		}
 
 		if (_spacesMoved == SpacesPerTurn)
 		{
@@ -40,19 +50,29 @@ public class State : GameState<Player, Piece>
 		return (currentPlayer, "{player} moved {piece} {spaces} spaces to {location}", [player, piece, distance, location]);
 	}
 
+	private bool IsChallenging(Player player, Piece piece, Location location, out Challenge challenge)
+	{
+		throw new NotImplementedException();
+	}
+
 	protected override (bool result, string? reason) ValidateInner(Player player, Piece piece, Location location)
 	{
 		// no capturing in this game, just movement
-		if (PiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
+		//if (PiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
+
+		if (PlayerPieces[player.Name].Any(p => p.Location == location))
+		{
+			return (false, "Can't challenge your own pieces");
+		}
+
 		return (true, default);
 	}
 
 	/// <summary>
 	/// represents one piece attacking another, tracking the attacker and defender
 	/// </summary>
-	public class Duel
-	{
-		public required Location Location { get; set; }		
+	public class Challenge
+	{		
 		public (Player player, Piece piece) Attacker { get; set; }
 		public (Player player, Piece piece) Defender { get; set; }
 	}
