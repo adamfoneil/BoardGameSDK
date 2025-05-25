@@ -47,11 +47,11 @@ public class StateManager(
 		var state = new State()
 		{
 			CurrentPlayer = players.First().Name,
-			Players = players.Select(p => new Player()
+			Players = [.. players.Select(p => new Player()
 			{
 				Name = p.Name,
 				IsHuman = p.IsHuman
-			}).ToHashSet(),
+			})],
 			Pieces =
 			[
 				new Piece() { X = 1, Y = 19, Name = "A", PlayerName = players.First().Name },
