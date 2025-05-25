@@ -19,11 +19,11 @@
 	</ul>
 }
 
-<FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
+<RadzenButton Click="NewGame" Disabled="user is null" Class="my-3" Text="Start Game" />
 
 <GameGrid 
-TPlayer="Player" TPiece="Piece" TGameState="State"
-Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@user!.UserName" OnPlay="SaveState">
+	TPlayer="Player" TPiece="Piece" TGameState="State"
+	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@user!.UserName" OnPlay="SaveState">
 	<ChildContent>
 		@if (context.Piece != null)
 		{
@@ -38,7 +38,7 @@ Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@user!.Us
 
 	[Parameter] public string? InstanceKey { get; set; }
 
-	async Task NewGame(MouseEventArgs args)
+	async Task NewGame()
 	{
 		var url = await StateManager.StartAsync(true, [(user!.UserName!, true), ("player2", true)]);
 		Nav.NavigateTo(url, forceLoad: true);

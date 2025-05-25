@@ -13,10 +13,9 @@ public class State : GameState<Player, Piece>
 	private int _spacesMoved = 0;
 
 	protected override Location[] GetValidMovesInner(Player player, Piece piece) =>
-		piece.Location
+		[.. piece.Location
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
-			.Except(PlayerPieces[player.Name].Select(p => p.Location))
-			.ToArray();
+			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 
 	protected override (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(Player player, Piece piece, Location location)
 	{
@@ -27,6 +26,8 @@ public class State : GameState<Player, Piece>
 		piece.Y = location.Y;
 
 		string currentPlayer = CurrentPlayer!;
+
+
 
 		if (_spacesMoved == SpacesPerTurn)
 		{
@@ -44,5 +45,15 @@ public class State : GameState<Player, Piece>
 		// no capturing in this game, just movement
 		if (PiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
 		return (true, default);
+	}
+
+	/// <summary>
+	/// represents one piece attacking another, tracking the attacker and defender
+	/// </summary>
+	public class Duel
+	{
+		public required Location Location { get; set; }		
+		public (Player player, Piece piece) Attacker { get; set; }
+		public (Player player, Piece piece) Defender { get; set; }
 	}
 }
