@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using AuthExtensions
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
@@ -9,10 +10,10 @@
 @using Microsoft.JSInterop
 @using BlazorApp
 @using BlazorApp.Components
-@using AuthExtensions
 @using Database
 @using Database.Entities
 @using HashidsNet
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.FluentUI.AspNetCore.Components
 @using Abstractions
+@inject CurrentUserAccessor<ApplicationUser> CurrentUser

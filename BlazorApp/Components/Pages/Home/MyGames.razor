@@ -13,8 +13,12 @@
 
 @code {
 	GameInstance[] GameInstances = [];
+	ApplicationUser? user;
 
-	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }
+	protected override async Task OnInitializedAsync()
+	{
+		user = await CurrentUser.GetAsync();
+	}
 
 	protected override async Task OnParametersSetAsync()
 	{
@@ -22,7 +26,7 @@
 
 		using var db = DbFactory.CreateDbContext();
 
-		var userId = CurrentUser?.UserId ?? 0;
+		var userId = user?.UserId ?? 0;
 
 		GameInstances = await db.MyGames(userId).ToArrayAsync();
 	}

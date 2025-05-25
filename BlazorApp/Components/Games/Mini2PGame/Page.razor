@@ -7,7 +7,7 @@
 @implements IDisposable
 
 <h3>Mini2P Game</h3>
-<p>user = @CurrentUser?.UserName, current player = @StateManager.State?.CurrentPlayer</p>
+<p>user = @user!.UserName, current player = @StateManager.State?.CurrentPlayer</p>
 
 @if (GameInstances.Any())
 {
@@ -22,8 +22,8 @@
 <FluentButton OnClick="NewGame" Disabled="CurrentUser is null" Class="my-3">Start Game</FluentButton>
 
 <GameGrid 
-	TPlayer="Player" TPiece="Piece" TGameState="State"
-	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
+TPlayer="Player" TPiece="Piece" TGameState="State"
+Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@user!.UserName" OnPlay="SaveState">
 	<ChildContent>
 		@if (context.Piece != null)
 		{
@@ -33,31 +33,31 @@
 </GameGrid>
 
 @code {
-	GameInstance[] GameInstances = [];
-
-	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
+	private ApplicationUser? user;
+	private GameInstance[] GameInstances = [];
 
 	[Parameter] public string? InstanceKey { get; set; }
 
 	async Task NewGame(MouseEventArgs args)
 	{
-		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true), ("player2", true)]);
+		var url = await StateManager.StartAsync(true, [(user!.UserName!, true), ("player2", true)]);
 		Nav.NavigateTo(url, forceLoad: true);
 	}
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
+		user = await CurrentUser.GetAsync();
 		Relay.StateChanged += OnGameStateChanged;
 	}
 
 	protected override async Task OnParametersSetAsync()
 	{
-		Logger.LogDebug("Current user = {0}", CurrentUser?.UserName ?? "<unknown>");
+		Logger.LogDebug("Current user = {0}", user!.UserName ?? "<unknown>");
 
 		if (InstanceKey is null)
 		{
 			using var db = DbFactory.CreateDbContext();
-			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini2P).ToArrayAsync();
+			GameInstances = await db.MyGames(user!.UserId, GameType.Mini2P).ToArrayAsync();
 			return;
 		}
 
@@ -67,7 +67,7 @@
 	private async void OnGameStateChanged(object? sender, StateChangeEventArgs e)
 	{
 		if (e.InstanceId != StateManager.InstanceId) return;
-		if (e.ToPlayer != CurrentUser?.UserName) return;
+		if (e.ToPlayer != user!.UserName) return;
 		StateManager.Update(e.Json);
 		await InvokeAsync(StateHasChanged);
 	}
@@ -76,7 +76,7 @@
 	{
 		Logger.LogInformation(args.LogMessage, args.LogParams);
 		await StateManager.SaveAsync();
-		await Relay.StateChangedAsync(CurrentUser!.UserName!, StateManager);
+		await Relay.StateChangedAsync(user!.UserName!, StateManager);
 	}
 
 	public void Dispose()

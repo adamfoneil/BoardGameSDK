@@ -5,7 +5,7 @@
 
 <AuthorizeView>
 	<Authorized>
-		<p>hello, @CurrentUser?.UserId</p>
+		<p>hello, @user?.UserName (id = @user.UserId)</p>
 		<MyGames />
 
 		<FluentCard>
@@ -19,10 +19,15 @@
 </AuthorizeView>
 
 <p>in other news</p>
-<p>user = @CurrentUser?.UserName</p>
+<p>user = @user?.UserName</p>
 
 @code {
-	[CascadingParameter] ApplicationUser? CurrentUser { get; set; }
+	private ApplicationUser? user;
+
+	protected override async Task OnInitializedAsync()
+	{
+		user = await CurrentUser.GetAsync();
+	}
 
 	async Task ClickMe(MouseEventArgs args)
 	{

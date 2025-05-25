@@ -9,7 +9,7 @@
 @implements IDisposable
 
 <h3>Mini1P Game</h3>
-<p>user = @CurrentUser?.UserName</p>
+<p>user = @user!.UserName</p>
 
 @if (GameInstances.Any())
 {
@@ -27,7 +27,7 @@
 
 <GameGrid 
 	TPlayer="MiniGamePlayer" TPiece="MiniGamePiece" TGameState="MiniGameState" 
-	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@CurrentUser?.UserName" OnPlay="SaveState">
+	Visible="StateManager.IsLoaded" State="StateManager.State" PlayerName="@user!.UserName" OnPlay="SaveState">
 	<ChildContent>		
 		@if (context.Piece != null)
 		{
@@ -38,24 +38,24 @@
 
 @code {
 	GameInstance[] GameInstances = [];	
-
-	[CascadingParameter] public ApplicationUser? CurrentUser { get; set; }
+	private ApplicationUser? user;
 
 	[Parameter] public string? InstanceKey { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
+		user = await CurrentUser.GetAsync();
 		Relay.StateChanged += OnGameStateChanged;
 	}
 
 	protected override async Task OnParametersSetAsync()
 	{
-		Logger.LogDebug("Current user = {0}", CurrentUser?.UserName ?? "<unknown>");
+		Logger.LogDebug("Current user = {0}", user?.UserName ?? "<unknown>");
 
 		if (InstanceKey is null)
 		{
 			using var db = DbFactory.CreateDbContext();
-			GameInstances = await db.MyGames(CurrentUser?.UserId ?? 0, GameType.Mini1P).ToArrayAsync();
+			GameInstances = await db.MyGames(user!.UserId, GameType.Mini1P).ToArrayAsync();
 			return;
 		}
 
@@ -64,14 +64,14 @@
 
 	async Task NewGame(MouseEventArgs args)
 	{
-		var url = await StateManager.StartAsync(true, [(CurrentUser!.UserName!, true)]);
+		var url = await StateManager.StartAsync(true, [(user!.UserName!, true)]);
 		Nav.NavigateTo(url, forceLoad: true);
 	}
 
 	private async void OnGameStateChanged(object? sender, StateChangeEventArgs e)
 	{
 		if (e.InstanceId != StateManager.InstanceId) return;
-		if (e.ToPlayer != CurrentUser?.UserName) return;
+		if (e.ToPlayer != user!.UserName) return;
 		StateManager.Update(e.Json);
 		await InvokeAsync(StateHasChanged);
 	}
