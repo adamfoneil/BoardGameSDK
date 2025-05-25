@@ -27,11 +27,13 @@ public class GameInstance : BaseTable
 	/// </summary>
 	public bool IsTestMode { get; set; }
 	public string Url { get; set; } = default!;
+	public int MoveNumber { get; set; }
 
 	/// <summary>
 	/// human players only
 	/// </summary>
 	public ICollection<GameInstancePlayer> PlayerAccounts { get; set; } = [];
+	public ICollection<PriorGameState> StateHistory { get; set; } = [];
 }
 
 public class GameInstanceConfiguration : IEntityTypeConfiguration<GameInstance>

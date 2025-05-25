@@ -11,6 +11,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
 	public DbSet<GameInstance> GameInstances { get; set; }
 	public DbSet<GameInstancePlayer> GameInstancePlayers { get; set; }
 	public DbSet<ReadyPlayer> ReadyPlayers { get; set; }
+	public DbSet<PriorGameState> PriorGameStates { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{

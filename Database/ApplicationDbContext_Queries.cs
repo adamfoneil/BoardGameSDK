@@ -28,6 +28,23 @@ public partial class ApplicationDbContext
 
 	public async Task SaveStateAsync<T>(int instanceId, T state)
 	{
+		// record the state in the history
+		var gameInstance = await GameInstances.SingleOrDefaultAsync(row => row.Id == instanceId) ?? throw new Exception("Game instance not found.");
+
+		if (gameInstance.MoveNumber > 0)
+		{
+			PriorGameState pgs = new()
+			{
+				GameInstance = gameInstance,
+				MoveNumber = gameInstance.MoveNumber,
+				State = gameInstance.State
+			};
+			gameInstance.StateHistory.Add(pgs);
+		}
+
+		gameInstance.MoveNumber++;
+		await SaveChangesAsync();
+
 		var json = JsonSerializer.Serialize(state);
 
 		var count = await GameInstances
