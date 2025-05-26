@@ -23,7 +23,7 @@ public class State : GameState<Player, Piece>
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 
-	protected override string PlayInner(Player player, Piece piece, Location location)
+	protected override string PlayInner(Player player, Piece piece, Location location, Piece? attackedPiece)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
@@ -33,12 +33,6 @@ public class State : GameState<Player, Piece>
 
 		string currentPlayer = CurrentPlayer!;
 		
-		if (IsChallenging(player, piece, location, out var challenge))
-		{
-			// save to state, change game mode to Challenge
-			// todo: make it so the the piece location doesn't take effect until challenge is resolved
-		}
-
 		if (_spacesMoved == SpacesPerTurn)
 		{
 			CurrentPlayerIndex++;
@@ -49,12 +43,6 @@ public class State : GameState<Player, Piece>
 
 		Logger?.LogDebug("{player} moved {piece} {spaces} spaces to {location}", player, piece, distance, location);
 		return currentPlayer;
-	}
-
-	private bool IsChallenging(Player player, Piece piece, Location location, out Challenge? challenge)
-	{
-		challenge = default;
-		return false;
 	}
 
 	protected override (bool result, string? reason) ValidateInner(Player player, Piece piece, Location location)

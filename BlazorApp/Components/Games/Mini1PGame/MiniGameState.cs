@@ -27,7 +27,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))
 			.ToArray();
 	
-	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
+	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location, MiniGamePiece? attackedPiece)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;

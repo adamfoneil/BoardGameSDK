@@ -48,7 +48,7 @@ public abstract class GameState<TPlayer, TPiece>
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
-	protected abstract string PlayInner(TPlayer player, TPiece piece, Location location);
+	protected abstract string PlayInner(TPlayer player, TPiece piece, Location location, TPiece? attackedPiece);
 
 	public string Play(string playerName, TPiece piece, Location location)
 	{
@@ -56,14 +56,21 @@ public abstract class GameState<TPlayer, TPiece>
 		var (valid, reason) = Validate(player, piece, location);
 		if (!valid) throw new Exception("Invalid move: " + reason);
 
-		var currentPlayer = PlayInner(player, piece, location);
+		TPiece? attackedPiece = default;
+		if (PiecesByLocation.TryGetValue(location, out var existingPiece) && existingPiece.PlayerName != playerName)
+		{
+			attackedPiece = existingPiece;
+		}
+
+		var currentPlayer = PlayInner(player, piece, location, attackedPiece);
 
 		PlayerChanged = false;
 
 		if (currentPlayer != CurrentPlayer)
 		{
+			Logger?.LogDebug("Current player changing from {oldPlayer} to {newPlayer}", CurrentPlayer, playerName);
 			CurrentPlayer = currentPlayer;
-			PlayerChanged = true;
+			PlayerChanged = true;			
 		}
 
 		return currentPlayer;
