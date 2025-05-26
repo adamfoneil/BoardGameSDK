@@ -28,8 +28,8 @@
 	{
 		for (int x = 1; x <= State.Width; x++)
 		{
-			var piece = State.GetPiece(new(x, y));
 			Location location = new(x, y);
+			var piece = State.GetPiece(location);			
 			<div style="@Style(x, y)" @onclick="(args) => CellClick(location, piece)" class="@ClassName(x, y)">
 				@ChildContent(new() { Location = location, Piece = piece })
 			</div>
