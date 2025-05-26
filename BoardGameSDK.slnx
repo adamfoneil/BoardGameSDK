@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Abstractions/Abstractions.csproj" />
+  <Project Path="BlazorApp/BlazorApp.csproj" />
+  <Project Path="Database/Database.csproj" />
+</Solution>
