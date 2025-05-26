@@ -22,10 +22,9 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 	public int MovesRemaining => SpacesPerTurn - _spacesMoved;
 
 	protected override Location[] GetValidMovesInner(MiniGamePlayer player, MiniGamePiece piece) =>
-		piece.Location
+		[.. piece.Location
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
-			.Except(PlayerPieces[player.Name].Select(p => p.Location))
-			.ToArray();
+			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 	
 	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location, MiniGamePiece? attackedPiece)
 	{
