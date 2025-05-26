@@ -48,9 +48,12 @@ public abstract class GameState<TPlayer, TPiece>
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
-	protected abstract string PlayInner(TPlayer player, TPiece piece, Location location, TPiece? attackedPiece);
+	protected abstract string PlayInner(TPlayer player, TPiece piece, Location location, TPiece? attackedPiece, Location priorLocation);
 
-	public string Play(string playerName, TPiece piece, Location location)
+	/// <summary>
+	/// executes a play and returns the new current player
+	/// </summary>
+	public string Play(string playerName, TPiece piece, Location location, Location priorLocation)
 	{
 		var player = PlayersByName[playerName];
 		var (valid, reason) = Validate(player, piece, location);
@@ -62,7 +65,7 @@ public abstract class GameState<TPlayer, TPiece>
 			attackedPiece = existingPiece;
 		}
 
-		var currentPlayer = PlayInner(player, piece, location, attackedPiece);
+		var currentPlayer = PlayInner(player, piece, location, attackedPiece, priorLocation);
 
 		PlayerChanged = false;
 

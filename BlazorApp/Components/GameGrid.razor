@@ -42,6 +42,7 @@
 	private PlayActions Action = PlayActions.Select;
 	private TPiece? SelectedPiece;
 	private HashSet<Location> ValidMoves = [];
+	private Location? PriorLocation;
 
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
@@ -81,16 +82,18 @@
 			{
 				if (piece is null) return;
 				SelectedPiece = piece;
+				PriorLocation = piece.Location;
 				ValidMoves = State!.GetValidMoves(State.CurrentPlayer!, piece);
 				Action = PlayActions.Execute;
 			}
 			else if (Action == PlayActions.Execute)
 			{
-				var currentPlayer = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
+				var currentPlayer = State!.Play(State.CurrentPlayer!, SelectedPiece!, location, PriorLocation!);
 				await OnPlay.InvokeAsync();
 				Action = PlayActions.Select;
 				SelectedPiece = null;
-				ValidMoves.Clear();
+				PriorLocation = null;
+				ValidMoves.Clear();				
 			}
 
 			StateHasChanged();
