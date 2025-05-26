@@ -9,7 +9,7 @@ public enum Mode
 }
 
 public class State : GameState<Player, Piece>
-{
+{	
 	public override uint Width => 20;
 
 	public override uint Height => 20;
@@ -23,7 +23,7 @@ public class State : GameState<Player, Piece>
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 
-	protected override (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(Player player, Piece piece, Location location)
+	protected override string PlayInner(Player player, Piece piece, Location location)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
@@ -47,12 +47,14 @@ public class State : GameState<Player, Piece>
 			currentPlayer = Players.ToArray()[CurrentPlayerIndex].Name;
 		}
 
-		return (currentPlayer, "{player} moved {piece} {spaces} spaces to {location}", [player, piece, distance, location]);
+		Logger?.LogDebug("{player} moved {piece} {spaces} spaces to {location}", player, piece, distance, location);
+		return currentPlayer;
 	}
 
-	private bool IsChallenging(Player player, Piece piece, Location location, out Challenge challenge)
+	private bool IsChallenging(Player player, Piece piece, Location location, out Challenge? challenge)
 	{
-		throw new NotImplementedException();
+		challenge = default;
+		return false;
 	}
 
 	protected override (bool result, string? reason) ValidateInner(Player player, Piece piece, Location location)

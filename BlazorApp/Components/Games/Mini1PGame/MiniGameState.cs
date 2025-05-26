@@ -13,7 +13,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 
 	public const int SpacesPerTurn = 5;
 	public const int TurnsPerGame = 7;
-
+	
 	public override uint Width { get; } = DefinedWidth;
 	public override uint Height { get; } = DefinedHeight;
 
@@ -27,7 +27,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))
 			.ToArray();
 	
-	protected override (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
+	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
@@ -37,7 +37,8 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 		
 		if (_spacesMoved ==  SpacesPerTurn) _spacesMoved = 0;
 
-		return (CurrentPlayer!, "{player} moved {piece} {spaces} spaces to {location}", [ player, piece, distance, location ]);
+		Logger?.LogDebug("{player} moved {piece} {spaces} spaces to {location}", player, piece, distance, location);
+		return CurrentPlayer!;
 	}
 
 	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, Location location)

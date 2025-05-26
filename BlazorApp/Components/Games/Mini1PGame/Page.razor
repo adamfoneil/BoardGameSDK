@@ -81,9 +81,8 @@
 		Relay.StateChanged -= OnGameStateChanged;
 	}	
 
-	private async Task SaveState(PlayArgs args)
-	{
-		Logger.LogInformation(args.LogMessage, args.LogParams);
+	private async Task SaveState()
+	{		
 		await StateManager.SaveAsync();
 	}
 }

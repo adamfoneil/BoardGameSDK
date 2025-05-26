@@ -1,14 +1,19 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 
 namespace Abstractions;
 
 /// <summary>
-/// the structure and rules of a game
+/// The structure and rules of a game.
+/// Should have parameterless ctor for easy deserialization.
 /// </summary>
 public abstract class GameState<TPlayer, TPiece>
 	where TPlayer : Player
 	where TPiece : Piece
 {
+	[JsonIgnore]
+	public ILogger<GameState<TPlayer, TPiece>>? Logger { get; init; }
+
 	public abstract uint Width { get; }
 	public abstract uint Height { get; }
 	public string? CurrentPlayer { get; set; }
@@ -43,15 +48,15 @@ public abstract class GameState<TPlayer, TPiece>
 
 	protected abstract (bool result, string? reason) ValidateInner(TPlayer player, TPiece piece, Location location);
 
-	protected abstract (string currentPlayer, string? logTemplate, object?[] logParams) PlayInner(TPlayer player, TPiece piece, Location location);
+	protected abstract string PlayInner(TPlayer player, TPiece piece, Location location);
 
-	public (string currentPlayer, string? logTemplate, object?[] logParams) Play(string playerName, TPiece piece, Location location)
+	public string Play(string playerName, TPiece piece, Location location)
 	{
 		var player = PlayersByName[playerName];
 		var (valid, reason) = Validate(player, piece, location);
 		if (!valid) throw new Exception("Invalid move: " + reason);
 
-		var (currentPlayer, logTemplate, logParams) = PlayInner(player, piece, location);
+		var currentPlayer = PlayInner(player, piece, location);
 
 		PlayerChanged = false;
 
@@ -61,7 +66,7 @@ public abstract class GameState<TPlayer, TPiece>
 			PlayerChanged = true;
 		}
 
-		return (currentPlayer, logTemplate, logParams);
+		return currentPlayer;
 	}
 
 	public void Resign(string playerName)

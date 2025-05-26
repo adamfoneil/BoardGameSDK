@@ -72,9 +72,8 @@
 		await InvokeAsync(StateHasChanged);
 	}
 
-	private async Task SaveState(PlayArgs args)
-	{
-		Logger.LogInformation(args.LogMessage, args.LogParams);
+	private async Task SaveState()
+	{		
 		await StateManager.SaveAsync();
 		await Relay.StateChangedAsync(user!.UserName!, StateManager);
 	}

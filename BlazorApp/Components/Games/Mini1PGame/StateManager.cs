@@ -7,11 +7,11 @@ using System.Text.Json;
 
 namespace BlazorApp.Components.Games.Mini1PGame;
 
-public class StateManager(
+public class StateManager(	
 	ILogger<StateManager> logger,
 	Hashids hashids,
 	IDbContextFactory<ApplicationDbContext> dbFactory) : GameStateManager<MiniGameState, MiniGamePlayer, MiniGamePiece>(logger)
-{
+{	
 	private readonly Hashids _hashids = hashids;
 	private readonly IDbContextFactory<ApplicationDbContext> _dbFactory = dbFactory;
 
@@ -39,7 +39,7 @@ public class StateManager(
 
 	protected override async Task<(string Url, int InstanceId, MiniGameState State)> StartInnerAsync(bool testMode, (string Name, bool IsHuman)[] players)
 	{
-		var state = new MiniGameState()
+		var state = new MiniGameState
 		{
 			CurrentPlayer = players.First().Name,
 			Players = players.Select(p => new MiniGamePlayer()

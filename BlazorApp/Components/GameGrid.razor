@@ -46,7 +46,7 @@
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
 	[Parameter] public RenderFragment<GameCell> ChildContent { get; set; } = (cell) => @<span>@cell.Location.X, @cell.Location.Y</span>;
-	[Parameter] public EventCallback<PlayArgs> OnPlay { get; set; }
+	[Parameter] public EventCallback OnPlay { get; set; }
 
 	[Parameter] public string? PlayerName { get; set; }	
 
@@ -86,8 +86,8 @@
 			}
 			else if (Action == PlayActions.Execute)
 			{
-				var (currentPlayer, msg, parameters) = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
-				await OnPlay.InvokeAsync(new PlayArgs { LogMessage = msg, LogParams = parameters });
+				var currentPlayer = State!.Play(State.CurrentPlayer!, SelectedPiece!, location);
+				await OnPlay.InvokeAsync();
 				Action = PlayActions.Select;
 				SelectedPiece = null;
 				ValidMoves.Clear();
