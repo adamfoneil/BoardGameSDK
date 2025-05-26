@@ -26,7 +26,7 @@ public abstract class GameState<TPlayer, TPiece>
 	[JsonIgnore]
 	public Dictionary<string, TPlayer> PlayersByName => Players.ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
 	[JsonIgnore]
-	public Dictionary<Location, TPiece> PiecesByLocation => Pieces.ToDictionary(p => p.Location);
+	public Dictionary<Location, TPiece> ActivePiecesByLocation => Pieces.Where(p => p.IsActive).ToDictionary(p => p.Location);
 	[JsonIgnore]
 	public bool PlayerChanged { get; private set; }
 
@@ -57,7 +57,7 @@ public abstract class GameState<TPlayer, TPiece>
 		if (!valid) throw new Exception("Invalid move: " + reason);
 
 		TPiece? attackedPiece = default;
-		if (PiecesByLocation.TryGetValue(location, out var existingPiece) && existingPiece.PlayerName != playerName)
+		if (ActivePiecesByLocation.TryGetValue(location, out var existingPiece) && existingPiece.PlayerName != playerName)
 		{
 			attackedPiece = existingPiece;
 		}
@@ -82,5 +82,5 @@ public abstract class GameState<TPlayer, TPiece>
 		player.IsActive = false;		
 	}
 
-	public TPiece? GetPiece(Location location) => PiecesByLocation.TryGetValue(location, out var piece) ? piece : null;
+	public TPiece? GetPiece(Location location) => ActivePiecesByLocation.TryGetValue(location, out var piece) ? piece : null;
 }

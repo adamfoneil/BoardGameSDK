@@ -43,7 +43,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 	protected override (bool result, string? reason) ValidateInner(MiniGamePlayer player, MiniGamePiece piece, Location location)
 	{
 		// no capturing in this game, just movement
-		if (PiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
+		if (ActivePiecesByLocation.ContainsKey(location)) return (false, "Piece already there");
 		return (true, default);
 	}
 }

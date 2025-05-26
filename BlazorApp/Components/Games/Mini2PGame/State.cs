@@ -41,6 +41,12 @@ public class State : GameState<Player, Piece>
 			currentPlayer = Players.ToArray()[CurrentPlayerIndex].Name;
 		}
 
+		if (attackedPiece is not null)
+		{
+			// simply assume the attacked piece is captured
+			attackedPiece.IsActive = false;
+		}
+
 		Logger?.LogDebug("{player} moved {piece} {spaces} spaces to {location}", player, piece, distance, location);
 		return currentPlayer;
 	}
