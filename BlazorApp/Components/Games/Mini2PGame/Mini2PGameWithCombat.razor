@@ -1,18 +1,17 @@
 ﻿@page "/mini2p-game-with-combat"
-@using Abstractions
 @using BlazorApp.Components.Games.Mini2PGame
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Logging
-@inject HashidServiceBase HashIds
+@inject StateManager StateManager
 @inject IDbContextFactory<Database.ApplicationDbContext> DbFactory
 @inject ILogger<Mini2PGameWithCombat> Logger
 
 <h3>Mini 2-Player Game with Combat Example</h3>
 
-@if (_state != null)
+@if (StateManager.State != null)
 {
     <GameGrid TPlayer="Player" TPiece="Piece" TGameState="State" 
-              State="_state" 
+              State="StateManager.State" 
               PlayerName="@_playerName" 
               OnPlay="HandlePlay"
               OnChallenge="HandleChallenge"
@@ -23,7 +22,7 @@
     </GameGrid>
 
     <div class="mt-3">
-        <p>Current Player: <strong>@_state.CurrentPlayer</strong></p>
+        <p>Current Player: <strong>@StateManager.State!.CurrentPlayer</strong></p>
     </div>
 }
 else
@@ -31,20 +30,12 @@ else
     <div>Loading game...</div>
 }
 
-@code {
-    private State? _state;
-    private StateManager? _stateManager;
+@code {    
     private string _playerName = "Player1";
 
     protected override async Task OnInitializedAsync()
     {
-        _stateManager = new StateManager(
-            Logger.AsLogger<StateManager>(),
-            HashIds,
-            DbFactory);
-
-        var result = await _stateManager.StartAsync(true, [("Player1", true), ("Player2", true)]);
-        _state = result.State;
+        await StateManager.StartAsync(true, [("Player1", true), ("Player2", true)]);        
     }
 
     private string GetPieceColor(Piece? piece)
@@ -74,11 +65,11 @@ else
 
     private async Task HandleChallengeResolution(bool attackerWins)
     {
-        if (_state == null) return;
+        if (StateManager.State == null) return;
 
         // Access GameGrid by reference and call its ResolveChallenge method
         // For this example, we call the state's ResolveChallenge method directly
-        _state.ResolveChallenge(_state.CurrentChallenge!, attackerWins);
+        StateManager.State.ResolveChallenge(StateManager.State.CurrentChallenge!, attackerWins);
         
         // Toggle player for testing
         _playerName = _playerName == "Player1" ? "Player2" : "Player1";
