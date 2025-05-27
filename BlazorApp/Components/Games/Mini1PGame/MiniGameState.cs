@@ -26,7 +26,7 @@ public class MiniGameState : GameState<MiniGamePlayer, MiniGamePiece>
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 	
-	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location, MiniGamePiece? attackedPiece)
+	protected override string PlayInner(MiniGamePlayer player, MiniGamePiece piece, Location location, MiniGamePiece? attackedPiece, Location priorLocation)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;

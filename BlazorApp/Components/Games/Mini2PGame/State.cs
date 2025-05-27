@@ -23,7 +23,7 @@ public class State : GameState<Player, Piece>
 			.GetAdjacentLocations(Directions.All, SpacesPerTurn - _spacesMoved)
 			.Except(PlayerPieces[player.Name].Select(p => p.Location))];
 
-	protected override string PlayInner(Player player, Piece piece, Location location, Piece? attackedPiece)
+	protected override string PlayInner(Player player, Piece piece, Location location, Piece? attackedPiece, Location priorLocation)
 	{
 		int distance = piece.Location.Distance(location);
 		_spacesMoved += distance;
