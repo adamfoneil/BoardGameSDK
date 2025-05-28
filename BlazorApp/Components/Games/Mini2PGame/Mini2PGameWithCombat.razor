@@ -1,0 +1,78 @@
+﻿@page "/mini2p-game-with-combat"
+@using BlazorApp.Components.Games.Mini2PGame
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Logging
+@inject StateManager StateManager
+@inject IDbContextFactory<Database.ApplicationDbContext> DbFactory
+@inject ILogger<Mini2PGameWithCombat> Logger
+
+<h3>Mini 2-Player Game with Combat Example</h3>
+
+@if (StateManager.State != null)
+{
+    <GameGrid TPlayer="Player" TPiece="Piece" TGameState="State" 
+              State="StateManager.State" 
+              PlayerName="@_playerName" 
+              OnPlay="HandlePlay"
+              OnChallenge="HandleChallenge"
+              ChallengeComponent="ChallengeTemplate">
+        <div style="text-align:center">
+            <span style="color:@GetPieceColor(context.Piece)">@context.Piece?.Name</span>
+        </div>
+    </GameGrid>
+
+    <div class="mt-3">
+        <p>Current Player: <strong>@StateManager.State!.CurrentPlayer</strong></p>
+    </div>
+}
+else
+{
+    <div>Loading game...</div>
+}
+
+@code {    
+    private string _playerName = "Player1";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await StateManager.StartAsync(true, [("Player1", true), ("Player2", true)]);        
+    }
+
+    private string GetPieceColor(Piece? piece)
+    {
+        if (piece == null) return "transparent";
+        return piece.PlayerName == "Player1" ? "blue" : "red";
+    }
+
+    private async Task HandlePlay()
+    {
+        // Toggle between players for testing
+        _playerName = _playerName == "Player1" ? "Player2" : "Player1";
+        StateHasChanged();
+    }
+
+    private async Task HandleChallenge(object challenge)
+    {
+        // Challenge will be handled by the ChallengeDialog component
+        StateHasChanged();
+    }
+
+    private RenderFragment<object> ChallengeTemplate => (challenge) =>
+    {
+        var typedChallenge = challenge as State.Challenge;
+        return @<ChallengeDialog Challenge="typedChallenge" OnResolve="HandleChallengeResolution" />;
+    };
+
+    private async Task HandleChallengeResolution(bool attackerWins)
+    {
+        if (StateManager.State == null) return;
+
+        // Access GameGrid by reference and call its ResolveChallenge method
+        // For this example, we call the state's ResolveChallenge method directly
+        StateManager.State.ResolveChallenge(StateManager.State.CurrentChallenge!, attackerWins);
+        
+        // Toggle player for testing
+        _playerName = _playerName == "Player1" ? "Player2" : "Player1";
+        StateHasChanged();
+    }
+}

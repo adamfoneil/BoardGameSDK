@@ -38,16 +38,26 @@
 </div>
 <p class="mt-3">player name = @PlayerName, current turn = @State?.CurrentPlayer</p>
 
+@if (CurrentChallenge != null && ChallengeComponent != null)
+{
+	<div class="mt-3">
+		@ChallengeComponent(CurrentChallenge)
+	</div>
+}
+
 @code {
 	private PlayActions Action = PlayActions.Select;
 	private TPiece? SelectedPiece;
 	private HashSet<Location> ValidMoves = [];
 	private Location? PriorLocation;
+	private object? CurrentChallenge;
 
 	[Parameter] public bool Visible { get; set; } = true;
 	[Parameter] public TGameState? State { get; set; }	
 	[Parameter] public RenderFragment<GameCell> ChildContent { get; set; } = (cell) => @<span>@cell.Location.X, @cell.Location.Y</span>;
 	[Parameter] public EventCallback OnPlay { get; set; }
+	[Parameter] public EventCallback<object> OnChallenge { get; set; }
+	[Parameter] public RenderFragment<object>? ChallengeComponent { get; set; }
 
 	[Parameter] public string? PlayerName { get; set; }	
 
@@ -68,7 +78,8 @@
 	private enum PlayActions
 	{
 		Select,
-		Execute
+		Execute,
+		Challenge
 	}
 
 	private async Task CellClick(Location location, TPiece? piece)
@@ -77,6 +88,7 @@
 		{
 			if (!IsMyTurn) return;
 			if (Action == PlayActions.Execute && piece != null && !ValidMoves.Contains(piece.Location)) return;
+			if (Action == PlayActions.Challenge) return; // Prevent actions during a challenge
 
 			if (Action == PlayActions.Select)
 			{
@@ -88,6 +100,44 @@
 			}
 			else if (Action == PlayActions.Execute)
 			{
+				TPiece? attackedPiece = null;
+				if (State!.ActivePiecesByLocation.TryGetValue(location, out var existingPiece) && 
+					existingPiece.PlayerName != State.CurrentPlayer)
+				{
+					attackedPiece = existingPiece;
+				}
+
+				// If there's a piece to attack, initiate a challenge
+				if (attackedPiece != null && State is dynamic stateWithChallenge)
+				{
+					// Create a challenge
+					try
+					{
+						// Try to get a current challenge property or method from the state
+						var challenge = stateWithChallenge.CreateChallenge(
+							State.CurrentPlayer!, 
+							SelectedPiece!, 
+							attackedPiece, 
+							location, 
+							PriorLocation!);
+
+						// If we got a challenge, set it as current and change action state
+						if (challenge != null)
+						{
+							CurrentChallenge = challenge;
+							Action = PlayActions.Challenge;
+							await OnChallenge.InvokeAsync(challenge);
+							StateHasChanged();
+							return;
+						}
+					}
+					catch
+					{
+						// Fall back to regular play if challenge creation fails
+					}
+				}
+
+				// Proceed with normal play if no challenge was created
 				var currentPlayer = State!.Play(State.CurrentPlayer!, SelectedPiece!, location, PriorLocation!);
 				await OnPlay.InvokeAsync();
 				Action = PlayActions.Select;
@@ -102,5 +152,32 @@
 		{
 			await Dialog.Alert(exc.Message);
 		}		
+	}
+
+	// Method to resolve a challenge
+	public async Task ResolveChallenge(bool attackerWins)
+	{
+		if (Action != PlayActions.Challenge || CurrentChallenge == null) return;
+
+		try
+		{
+			if (State is dynamic stateWithChallenge)
+			{
+				var currentPlayer = stateWithChallenge.ResolveChallenge(CurrentChallenge, attackerWins);
+				
+				CurrentChallenge = null;
+				Action = PlayActions.Select;
+				SelectedPiece = null;
+				PriorLocation = null;
+				ValidMoves.Clear();
+				
+				await OnPlay.InvokeAsync();
+				StateHasChanged();
+			}
+		}
+		catch (Exception exc)
+		{
+			await Dialog.Alert(exc.Message);
+		}
 	}
 }
