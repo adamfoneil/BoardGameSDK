@@ -25,3 +25,9 @@ A key part of this is making sure events in one browser reflect in other players
 - individual games override the `EventRelay` class -- for example [ApplicationEventRelay](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/ApplicationEventRelay.cs), where they provide a way to query the active players of a game, so the `EventRelay` will know whom to notify that a play has been made
 - a specific [game page](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini2PGame/Page.razor#L6) injects `ApplicationEventRelay` and [subscribes](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini2PGame/Page.razor#L50) to the state change event.
 - moreover, when a player makes a move, [SaveState](https://github.com/adamfoneil/BoardGameSDK/blob/master/BlazorApp/Components/Games/Mini2PGame/Page.razor#L75) is called, which persists data about the move, then the event is broadcast or relayed to other active players.
+
+## What about SignalR?
+
+SignalR is the underlying real-time communication technology used by Blazor Server to synchronize UI state and events between clients and the server. While SignalR can be used directly in any .NET application to implement real-time features, it typically requires more setup and boilerplate code, such as managing hubs, connections, and message serialization.
+
+The `EventRelay` class leverages SignalR implicitly, providing a higher-level abstraction that simplifies common scenarios and reduces the complexity of direct SignalR usage. As a result, you don't need to work with SignalR directly when using `EventRelay`—it handles the underlying messaging for you.
