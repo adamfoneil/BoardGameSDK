@@ -1,0 +1,32 @@
+﻿@using Abstractions
+
+@if (Challenge == null) return;
+
+<div class="card">
+    <div class="card-header bg-warning text-white">
+        <h5 class="mb-0">Combat Challenge!</h5>
+    </div>
+    <div class="card-body">
+        <p>
+            <strong>@Challenge.Attacker.player.Name's</strong> piece <strong>@Challenge.Attacker.piece.Name</strong>
+            is challenging 
+            <strong>@Challenge.Defender.player.Name's</strong> piece <strong>@Challenge.Defender.piece.Name</strong>!
+        </p>
+        
+        <p>Who will win this combat?</p>
+        
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-primary" @onclick="() => OnResolve.InvokeAsync(true)">
+                @Challenge.Attacker.player.Name wins
+            </button>
+            <button class="btn btn-danger" @onclick="() => OnResolve.InvokeAsync(false)">
+                @Challenge.Defender.player.Name wins
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public State.Challenge? Challenge { get; set; }
+    [Parameter] public EventCallback<bool> OnResolve { get; set; }
+}
